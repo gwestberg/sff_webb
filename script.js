@@ -19,10 +19,7 @@ function showWelcomePage() {
     
     var print = "Hej och Välkommen "
     
-    fetch(localHost+"filmstudio")
-    .then(function (response) {
-        return response.json();
-    })
+    getStudiosAsync()
     .then(function (json) {
         
         print = print + json[localStorage.getItem("userId", "")].name;
@@ -63,11 +60,6 @@ function showLoginPage() {
         var getUser = document.getElementById("user").value;
         var getPass = document.getElementById("password").value;
         
-        //Fetchar data från ett jsondokument
-        // fetch(localHost+"filmstudio")
-        // .then(function (response) {
-        //     return response.json();
-        // })
         getStudiosAsync()
         .then(function (json) {
             console.log(json);
@@ -152,7 +144,6 @@ async function getTriviasAsync()
 let rentalButton = document.getElementById("rentalButton");
 rentalButton.addEventListener('click', function showRentals(){
     getRentalsAsync()
-    .then(data => console.log(data))
     .then(data => buildList(data, rentalButton))
                     .catch(error =>{console.log(error)}); 
 });
@@ -164,6 +155,8 @@ async function getRentalsAsync()
   return data;
 }
 
+
+//Bygger listan med objekt, beroende på vilken knapp som tryckts på byggs datan på olika sätt.
 function buildList(data, button)
 {
     document.getElementById("container").innerHTML="";
@@ -175,7 +168,7 @@ function buildList(data, button)
         newItem.id = element.id;
 
         if (button == movieButton) {
-            newItem.textContent = element.name;
+            newItem.textContent = element.name +" "+ element.stock;
         }
         if (button == studioButton) {
             newItem.textContent = element.name;
