@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
     <link rel="stylesheet" type="text/css" href="stylesheet.css">
     <title>SFF</title>
 </head>
@@ -13,24 +12,26 @@
     <!-- header -->
     <header>
         <!-- <div class="container"> -->
-            <div class="row">
-            <div class="jumbotron col-8">
-                <div><h2>Svenska Förenade Filmstudios</h2></div>
-                <p>Hyrservice för Sveriges Biografer</p>
+
+                <div class="header ">
+                    <div class="headerText"><h2>Svenska Förenade Filmstudios</h2></div>
+                    <div class="login" id="login"></div>
+                </div>
             </div>
-            <div class="jumbotron login col-2" id="login"></div>
-        </div>
+        </header>
+
+    <div id="rendered-content" class="rendered-content">some frikking content</div>
+
+    <div class="sidenav">
+            <div class="btn-group">
+                <button class="button" id="movieButton">Movies</button>
+                <button class="button" id="studioButton">Studios</button>
+                <button class="button" id="triviaButton">Trivias</button>
+                <button class="button" id="rentalButton">Rentals</button>
+            </div>
+
     </div>
-    </header>
 
-    <button id="movieButton">Movies</button>
-    <button id="studioButton">Studios</button>
-    <button id="triviaButton">Trivias</button>
-    <button id="rentalButton">Rentals</button>
-
-    <div id="container"></div>
-
-
-    <script src="script.js"></script> 
+<script src="script.js"></script> 
 </body>
 </html>

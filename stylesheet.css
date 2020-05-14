@@ -1,18 +1,49 @@
 * {
     box-sizing: border-box;
   }
-  body{
-      display: flex;
-  }
 
 
 .header{
-background-color: darkcyan;
-margin-left: 10%;
+    display:flex;
+    justify-content: space-between;
+    height: 15%;
+    width: 90%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    margin-left: 10%;
+    background-color: rgba(17, 17, 17, 0.384);
+    overflow-x: hidden;
+    color: white;
+}
+.header .login{
+    display: block;
+    margin-right: 5%;
+    color: rgb(0, 0, 0);
+
+}
+.header .headerText{
+    display: flex;
+    align-items: center;
+    padding-left: 10px;
+    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+    font-size: 30px;
 }
 
-.content{
-    background-color: cadetblue;
+.rendered-content{
+    display:flex;
+    justify-content: space-around;
+    flex-direction: column;
+    height: 100%;
+    width: 90%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    margin-top: 10%;
+    margin-left: 10%;
+    background-color: rgba(17, 17, 17, 0.384);
+    overflow-x: hidden;
+    color: white;
 }
 
 /* Style the side navigation */
@@ -28,9 +59,9 @@ margin-left: 10%;
     color: white;
   }
 
-.btn-group .button {
-    background-color: black;
-    border: black;
+  .btn-group .button {
+    background-color: rgb(0, 0, 0); 
+    border: 1px solid rgb(0, 0, 0);
     color: white;
     padding: 15px 32px;
     text-align: center;
@@ -40,10 +71,31 @@ margin-left: 10%;
     width: 150px;
     display: block;
   }
-  .btn-group .button:not(:last-child) {
-    border-bottom: none; /* Prevent double borders */
-  }
   
   .btn-group .button:hover {
-    background-color: #b8b8b848;
+    background-color: #86868681;
+  }
+
+  
+  .movieImage{
+      margin-left: 10px;
+      width: 150px;
+      height: 100px;
+  }
+  .createdDiv{
+      margin-left: 10px;
+      font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+      font-size: 20px;
+  }
+  .rentButton{
+    background-color: rgba(14, 105, 101, 0.74); 
+    border: 1px solid rgb(0, 0, 0);
+    color: white;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    font-size: 16px;
+    cursor: pointer;
+    width: 150px;
+    display: block;
   }

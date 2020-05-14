@@ -53,7 +53,7 @@ function showLoginPage() {
     document.getElementById("rentalButton").style.visibility = "hidden";
     
     //Inline-kodning lägger till två inputfält och en logga-in knapp
-    page.insertAdjacentHTML("afterbegin", ' name: <input id="user" type="text"> password: <input id="password" type="password"> <button id="login-btn">Logga In</button>');
+    page.insertAdjacentHTML("afterbegin", ' Name: <input class="login" id="user" type="text"> Password: <input class="login" id="password" type="password"> <button id="login-btn">Logga In</button>');
     
     let loginButton = document.getElementById("login-btn");
     
@@ -64,10 +64,8 @@ function showLoginPage() {
         var getPass = document.getElementById("password").value;
         
 
-        getStudiosAsync()
-        .then(function (json) {
-            console.log(json);
-            
+        getDataAsync("filmstudio")
+        .then(function (json) {            
             // jämför de angivna värdena med de som finns lagrade i jsondokumentet
             for (let i = 0; i < json.length; i++) {
                 if (getUser == json[i].name && getPass == json[i].password) {
@@ -85,7 +83,6 @@ function showLoginPage() {
             } else {
                 showErrorPage();
             }
-            
         });
         
         
@@ -99,70 +96,64 @@ function showLoginPage() {
 
 //Fetchar alla filmer och console.log:ar dom
 
+async function getDataAsync(endpoint){
+    let response = await fetch(localHost+endpoint);
+    let data = await response.json()
+    return data;
+}
 
 let movieButton = document.getElementById("movieButton");
 movieButton.addEventListener('click', function showMovies(){
-    getMoviesAsync().then(data => buildList(data, movieButton))
+    getDataAsync("film").then(data => buildList(data, movieButton))
                     .catch(error =>{console.log(error)}); 
 });
-
-async function getMoviesAsync() 
-{
-  let response = await fetch(localHost+"film");
-  let data = await response.json()
-  return data;
-}
 
 //Fetchar alla Studios
 
 let studioButton = document.getElementById("studioButton");
 studioButton.addEventListener('click', function showStudios(){
-    getStudiosAsync().then(data => buildList(data, studioButton))
-                    .catch(error =>{console.log(error)}); 
+    getDataAsync("filmstudio").then(data => buildList(data, studioButton))
+    .catch(error =>{console.log(error)}); 
 });
 
-async function getStudiosAsync() 
-{
-  let response = await fetch(localHost+"filmstudio");
-  let data = await response.json()
-  return data;
-}
 
 //Fetchar alla Trivias
 
 let triviaButton = document.getElementById("triviaButton");
 triviaButton.addEventListener('click', function showTrivias(){
-    getTriviasAsync().then(data => buildList(data, triviaButton))
-                    .catch(error =>{console.log(error)}); 
+    getDataAsync("filmTrivia").then(data => buildList(data, triviaButton))
+    .catch(error =>{console.log(error)}); 
 });
 
-async function getTriviasAsync() 
-{
-  let response = await fetch(localHost+"filmTrivia");
-  let data = await response.json()
-  return data;
-}
 
 //Fetchar alla Rentals
 
 let rentalButton = document.getElementById("rentalButton");
 rentalButton.addEventListener('click', function showRentals(){
-    getRentalsAsync()
-    .then(data => console.log(data))
-    .then(data => buildList(data, rentalButton))
-                    .catch(error =>{console.log(error)}); 
+    let dataToProcess = getDataAsync("RentedFilm");
+    let filteredData = filterData(dataToProcess);
+    console.log(dataToProcess);
+
+     buildList(filteredData, rentalButton)
+    .catch(error =>{console.log(error)}); 
 });
 
-async function getRentalsAsync() 
-{
-  let response = await fetch(localHost+"RentedFilm");
-  let data = await response.json()
-  return data;
+function filterData(data){
+    let filteredData = data.filterData(data => data.studioId === localStorage.getItem("userId").id)
+    return filteredData;
 }
 
+function renderImage(){
+    var img = document.createElement('img'); 
+    img.className ="movieImage";
+    img.src =  'wwwroot/placeholder.png'; 
+    document.getElementById('rendered-content').appendChild(img); 
+}
+
+//Bygger content
 function buildList(data, button)
 {
-    document.getElementById("container").innerHTML="";
+    document.getElementById("rendered-content").innerHTML="";
 
     data.forEach(element => {
 
@@ -171,7 +162,15 @@ function buildList(data, button)
         newItem.id = element.id;
 
         if (button == movieButton) {
-            newItem.textContent = element.name;
+            
+            renderImage();
+            if (localStorage.getItem("userId") !== null) {
+                let print =  "Namn: "+element.name +"<br>Antal kopior: " + element.stock +"<button class='rentButton'>rent</button>"+"<hr>";
+                newItem.innerHTML=print;
+            } else {
+                let print =  "Namn: "+element.name +"<br>Antal kopior: " + element.stock +"<hr>";
+                newItem.innerHTML=print;
+            }
         }
         if (button == studioButton) {
             newItem.textContent = element.name;
@@ -183,8 +182,9 @@ function buildList(data, button)
             newItem.textContent = element.returned;
         }
 
-        let insiderDiv = document.getElementById("container");
-        insiderDiv.appendChild(newItem);
+         document.getElementById("rendered-content")
+            .appendChild(newItem);
+
         
     });
 }
