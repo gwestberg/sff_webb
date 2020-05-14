@@ -1,7 +1,7 @@
 console.log("Hello World")
 console.log(localStorage.getItem("userId"));
 
-let localHost = "http://localhost:5001/api/";
+let localHost = "https://localhost:44361/api/";
 
 // ----------------------------------------------------------------
 var page = document.getElementById("login");
@@ -63,11 +63,7 @@ function showLoginPage() {
         var getUser = document.getElementById("user").value;
         var getPass = document.getElementById("password").value;
         
-        //Fetchar data från ett jsondokument
-        // fetch(localHost+"filmstudio")
-        // .then(function (response) {
-        //     return response.json();
-        // })
+
         getStudiosAsync()
         .then(function (json) {
             console.log(json);
