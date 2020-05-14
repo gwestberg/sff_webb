@@ -6,12 +6,11 @@
 .header{
     display:flex;
     justify-content: space-between;
-    height: 15%;
-    width: 90%;
+    height: 16%;
+    width: 100%;
     position: fixed;
     top: 0;
     left: 0;
-    margin-left: 10%;
     background-color: rgba(17, 17, 17, 0.384);
     overflow-x: hidden;
     color: white;
@@ -30,6 +29,63 @@
     font-size: 30px;
 }
 
+
+/* Style the side navigation */
+.sidenav {
+    margin-top: 10%;
+    height: 85%;
+    width: 10%;
+    position: fixed;
+    z-index: 1;
+    top: 0;
+    left: 0;
+    background-color: #111;
+    overflow-x: hidden;
+    color: white;
+}
+
+.btn-group .button {
+    background-color: rgb(0, 0, 0); 
+    border: 1px solid rgb(0, 0, 0);
+    color: white;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    font-size: 16px;
+    cursor: pointer;
+    width: 150px;
+    display: block;
+}
+
+.btn-group .button:hover {
+    background-color: #86868681;
+}
+.btn-group .userName{
+    background-color: rgb(0, 0, 0); 
+    border: 1px solid rgb(0, 0, 0);
+    color: rgb(18, 228, 193);
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    font-size: 30px;
+    width: 150px;
+    display: block;
+}
+
+.logoutButton{
+    background-color: rgb(0, 0, 0); 
+    border: 1px solid rgb(0, 0, 0);
+    color: white;
+    margin-top: 30%;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    font-size: 16px;
+    cursor: pointer;
+    width: 150px;
+    display: block;
+}
+
 .rendered-content{
     display:flex;
     justify-content: space-around;
@@ -41,42 +97,12 @@
     left: 0;
     margin-top: 10%;
     margin-left: 10%;
+    padding-left: 2%;
     background-color: rgba(17, 17, 17, 0.384);
     overflow-x: hidden;
     color: white;
 }
 
-/* Style the side navigation */
-.sidenav {
-    height: 100%;
-    width: 10%;
-    position: fixed;
-    z-index: 1;
-    top: 0;
-    left: 0;
-    background-color: #111;
-    overflow-x: hidden;
-    color: white;
-  }
-
-  .btn-group .button {
-    background-color: rgb(0, 0, 0); 
-    border: 1px solid rgb(0, 0, 0);
-    color: white;
-    padding: 15px 32px;
-    text-align: center;
-    text-decoration: none;
-    font-size: 16px;
-    cursor: pointer;
-    width: 150px;
-    display: block;
-  }
-  
-  .btn-group .button:hover {
-    background-color: #86868681;
-  }
-
-  
   .movieImage{
       margin-left: 10px;
       width: 150px;

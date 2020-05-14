@@ -5,6 +5,7 @@ let localHost = "https://localhost:44361/api/";
 
 // ----------------------------------------------------------------
 var page = document.getElementById("login");
+var displayUser = document.getElementById("userName");
 
 if (localStorage.getItem("userId") !== null) {
     showWelcomePage();
@@ -16,8 +17,8 @@ if (localStorage.getItem("userId") !== null) {
 function showWelcomePage() {
     page.innerHTML = "";
     document.getElementById("rentalButton").style.visibility = "visible";
+
     
-    var print = "Hej och Välkommen "
     
     fetch(localHost+"filmstudio")
     .then(function (response) {
@@ -25,12 +26,13 @@ function showWelcomePage() {
     })
     .then(function (json) {
         
-        print = print + json[localStorage.getItem("userId", "")].name;
-        page.insertAdjacentHTML("afterbegin", print);
+        var userName = json[localStorage.getItem("userId", "")].name;
+        displayUser.insertAdjacentHTML("afterbegin", "<div class='userName'>"+userName+"</div>");
+
     });
     
     //Inline kodning, lägger till en loggaut-knapp
-    page.insertAdjacentHTML("beforeend", "<div><button id='logoutButton'>Logga Ut</button></div>");
+    page.insertAdjacentHTML("beforeend", "<div><button class='logoutButton' id='logoutButton'>Logga Ut</button></div>");
     
     var logoutButton = document.getElementById("logoutButton");
     
@@ -84,10 +86,6 @@ function showLoginPage() {
                 showErrorPage();
             }
         });
-        
-        
-        
-        
     });
 }
 
