@@ -100,7 +100,7 @@ let movieButton = document.getElementById("movieButton");
 movieButton.addEventListener('click', function showMovies(){
     getMoviesAsync()
     .then(data => console.log(data))
-    .then(data => buildList(data, movieButton))
+    .then(data => buildList(data))
                     .catch(error =>{console.log(error)}); 
 });
 
@@ -159,10 +159,10 @@ async function getRentalsAsync()
 
 
 //Bygger listan med objekt, beroende på vilken knapp som tryckts på byggs datan på olika sätt.
- function buildList(data, button)
+ function buildList(data)
 {
     document.getElementById("content").innerHTML="";
-    if (data == null) {
+    if (data == undefined) {
         console.log(data)
     }
 
@@ -171,15 +171,16 @@ async function getRentalsAsync()
         let newItem = document.createElement("div");
         newItem.className = "createdDiv";
         newItem.id = element.id;
+        newItem.textContent = element.name;
         
-        switch (button) {
-            case movieButton:
-                newItem.textContent = element.name +" "+ element.stock;
-                break;
+        // switch (button) {
+        //     case movieButton:
+        //         newItem.textContent = element.name +" "+ element.stock;
+        //         break;
         
-            default:
-                break;
-        }
+        //     default:
+        //         break;
+        // }
         // if (button == movieButton) {
         // }
         // if (button == studioButton) {
