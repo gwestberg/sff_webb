@@ -1,7 +1,7 @@
 console.log("Hello World")
 console.log(localStorage.getItem("userId"));
 
-let localHost = "http://localhost:5001/api/";
+let localHost = "https://localhost:44361/api/";
 
 // ----------------------------------------------------------------
 var page = document.getElementById("login");
@@ -47,12 +47,12 @@ function showLoginPage() {
     
     //Töm sidan
     page.innerHTML = "";
-    document.getElementById("rentalButton").style.visibility = "hidden";
     
     //Inline-kodning lägger till två inputfält och en logga-in knapp
     page.insertAdjacentHTML("afterbegin", ' name: <input id="user" type="text"> password: <input id="password" type="password"> <button id="login-btn">Logga In</button>');
     
     let loginButton = document.getElementById("login-btn");
+    //document.getElementById("rentalButton").style.visibility = "hidden";
     
     //lyssnar på ett knapptryck och börjar processa informationen som angavs
     loginButton.addEventListener("click", function () {
@@ -98,7 +98,9 @@ function showLoginPage() {
 
 let movieButton = document.getElementById("movieButton");
 movieButton.addEventListener('click', function showMovies(){
-    getMoviesAsync().then(data => buildList(data, movieButton))
+    getMoviesAsync()
+    .then(data => console.log(data))
+    .then(data => buildList(data, movieButton))
                     .catch(error =>{console.log(error)}); 
 });
 
@@ -157,30 +159,40 @@ async function getRentalsAsync()
 
 
 //Bygger listan med objekt, beroende på vilken knapp som tryckts på byggs datan på olika sätt.
-function buildList(data, button)
+ function buildList(data, button)
 {
-    document.getElementById("container").innerHTML="";
+    document.getElementById("content").innerHTML="";
+    if (data == null) {
+        console.log(data)
+    }
 
-    data.forEach(element => {
+     data.forEach(element => {
 
         let newItem = document.createElement("div");
         newItem.className = "createdDiv";
         newItem.id = element.id;
+        
+        switch (button) {
+            case movieButton:
+                newItem.textContent = element.name +" "+ element.stock;
+                break;
+        
+            default:
+                break;
+        }
+        // if (button == movieButton) {
+        // }
+        // if (button == studioButton) {
+        //     newItem.textContent = element.name;
+        // }
+        // if (button == triviaButton) {
+        //     newItem.textContent = element.trivia;
+        // }
+        // if (button == rentalButton) {
+        //     newItem.textContent = element.returned;
+        // }
 
-        if (button == movieButton) {
-            newItem.textContent = element.name +" "+ element.stock;
-        }
-        if (button == studioButton) {
-            newItem.textContent = element.name;
-        }
-        if (button == triviaButton) {
-            newItem.textContent = element.trivia;
-        }
-        if (button == rentalButton) {
-            newItem.textContent = element.returned;
-        }
-
-        let insiderDiv = document.getElementById("container");
+        let insiderDiv = document.getElementById("content");
         insiderDiv.appendChild(newItem);
         
     });
