@@ -3,74 +3,38 @@ console.log(localStorage.getItem("userId"));
 
 const localHost = "https://localhost:44361/api/";
 
-// ----------------------------------------------------------------
-var page = document.getElementById("login");
-var displayUser = document.getElementById("userName");
+//--------------------------------------------------
+let login = document.getElementById("login");
+let displayUser = document.getElementById("userName");
 
 if (localStorage.getItem("userId") !== null) {
     showWelcomePage();
 } else {
     showLoginPage();
 }
-
-//Funktion som visar en specifik sida när man har lyckats logga in
-function showWelcomePage() {
-    page.innerHTML = "";
-    document.getElementById("rentalButton").style.visibility = "visible";
+//--------------------------------------------------
 
 
-
-    fetch(localHost + "filmstudio")
-        .then(function (response) {
-            return response.json();
-        })
-        .then(function (json) {
-
-            const user = json[localStorage.getItem("userId")];
-            displayUser.innerHTML= user.name;
-
-        });
-
-    //Inline kodning, lägger till en loggaut-knapp
-    page.insertAdjacentHTML("beforeend", "<div><button class='logoutButton' id='logoutButton'>Logga Ut</button></div>");
-
-    var logoutButton = document.getElementById("logoutButton");
-
-    logoutButton.addEventListener("click", function () {
-        localStorage.removeItem("userId");
-        showLoginPage();
-    });
-}
-
-//Funktion som visar en errorpage om man misslyckats med inloggningen
-function showErrorPage() {
-    page.insertAdjacentHTML("afterbegin", "<div>Något gick fel, har du glömt av ditt lösenord?</div><br>");
-}
-
-//den första sidan som visas, login.
+//Startstidan, login
 function showLoginPage() {
 
     //Töm sidan
-    page.innerHTML = "";
-    displayUser.innerHTML= "Välkommen";
+    login.innerHTML = "";
+    displayUser.innerHTML = "Välkommen";
     document.getElementById("rentalButton").style.visibility = "hidden";
 
     //Inline-kodning lägger till två inputfält och en logga-in knapp
-    page.insertAdjacentHTML("afterbegin", ' Name: <input class="login" id="user" type="text"> Password: <input class="login" id="password" type="password"> <button class="loginbtn" id="login-btn">Logga In</button>');
+    login.insertAdjacentHTML("afterbegin", ' Name: <input class="login" id="loginUser" type="text"> Password: <input class="login" id="password" type="password"> <button class="loginbtn" id="loginbtn">Logga In</button>');
 
-    let loginButton = document.getElementById("login-btn");
+    let loginButton = document.getElementById("loginbtn");
 
     //lyssnar på ett knapptryck och börjar processa informationen som angavs
     loginButton.addEventListener("click", function () {
-
-        var getUser = document.getElementById("user").value;
-        var getPass = document.getElementById("password").value;
-
+        let getUser = document.getElementById("loginUser").value;
+        let getPass = document.getElementById("password").value;
 
         getDataAsync("filmstudio")
-
             .then(function (studios) {
-                console.log(studios)
                 //jämför de angivna värdena med de som finns lagrade i jsondokumentet
                 for (let i = 0; i < studios.length; i++) {
                     if (getUser == studios[i].name && getPass == studios[i].password) {
@@ -92,178 +56,216 @@ function showLoginPage() {
     });
 }
 
-// ----------------------------------------------------
+//Inloggningen lyckades inte
+function showErrorPage() {
+    login.insertAdjacentHTML("afterbegin", "<div>Något gick fel, har du glömt av ditt lösenord?</div><br>");
+}
+
+// Inloggning har lyckats
+function showWelcomePage() {
+    login.innerHTML = "";
+    document.getElementById("rentalButton").style.visibility = "visible";
 
 
+
+    fetch(localHost + "filmstudio")
+        .then(function (response) {
+            return response.json();
+        })
+        .then(function (json) {
+
+            const user = json[localStorage.getItem("userId")];
+            displayUser.innerHTML = user.name;
+
+        });
+
+    //Inline kodning, lägger till en loggaut-knapp
+    login.insertAdjacentHTML("beforeend", "<div><button class='logoutButton' id='logoutButton'>Logga Ut</button></div>");
+
+    var logoutButton = document.getElementById("logoutButton");
+
+    logoutButton.addEventListener("click", function () {
+        localStorage.removeItem("userId");
+        showLoginPage();
+    });
+}
+
+//----------------------------------------------------
+
+
+//Hämtning av Data
 //Hämtar data beroende på vilken endpoint som skickas in.
 async function getDataAsync(endpoint) {
     let response = await fetch(localHost + endpoint);
     let data = await response.json()
     return data;
 }
+//---------------------------------------------------
 
-//Fetchar alla filmer
+//Eventlisteners som lyssnar efter knapptryck
+
+//Fetchar alla Filmer
 let movieButton = document.getElementById("movieButton");
 movieButton.addEventListener('click', function showMovies() {
-    getDataAsync("film").then(data => buildList(data, movieButton))
-        .catch(error => { console.log(error) });
+    getDataAsync("film")
+    .then(data => renderMovieList(data))
+    .catch(error => { console.log(error) });
 });
 
 //Fetchar alla Studios
-let studioButton = document.getElementById("studioButton");
-studioButton.addEventListener('click', function showStudios() {
-    getDataAsync("filmstudio").then(data => buildList(data, studioButton))
-        .catch(error => { console.log(error) });
-});
+// let studioButton = document.getElementById("studioButton");
+// studioButton.addEventListener('click', function showStudios() {
+//     getDataAsync("filmstudio")
+//         .then(data => console.log(data))
+//         .catch(error => { console.log(error) });
+// });
 
 //Fetchar alla Trivias
-let triviaButton = document.getElementById("triviaButton");
-triviaButton.addEventListener('click', function showTrivias() {
-    getDataAsync("filmTrivia").then(data => buildList(data, triviaButton))
-        .catch(error => { console.log(error) });
-});
+// let triviaButton = document.getElementById("triviaButton");
+// triviaButton.addEventListener('click', function showTrivias() {
+//     getDataAsync("filmTrivia")
+//         .then(data => console.log(data))
+//         .catch(error => { console.log(error) });
+// });
 
 //Fetchar alla Rentals
 let rentalButton = document.getElementById("rentalButton");
 rentalButton.addEventListener('click', function showRentals() {
-    getDataAsync("RentedFilm").then(data => buildList(data, rentalButton))
+    getDataAsync("RentedFilm")
+        .then(data => renderRentalList(data))
         .catch(error => { console.log(error) });
 });
 
 
 
-//Bygger content
-function buildList(data, button) {
-    document.getElementById("rendered-content").innerHTML = "";
-
-    data.forEach(element => {
-
-        let newItem = document.createElement("div");
-        newItem.className = "createdDiv";
-        newItem.id = element.id;
-
-        if (button == movieButton) {
-
-            renderMovieList(element, newItem);
-        }
-        if (button == studioButton) {
-            newItem.textContent = element.name;
-        }
-        if (button == triviaButton) {
-            newItem.textContent = element.trivia;
-        }
-        if (button == rentalButton) {
-            
-            getRentalsForStudio(element, newItem);
-        }
-
-        document.getElementById("rendered-content")
-            .appendChild(newItem);
+//------------------------------------------------
 
 
-    });
-}
+//Funktioner som bygger ihop datan
 
+// renderar bilderna till filmerna
 function renderImage() {
     var img = document.createElement('img');
     img.className = "movieImage";
     img.src = 'wwwroot/placeholder.png';
     document.getElementById('rendered-content').appendChild(img);
 }
-function renderTrivia(element, newItem){
-    var renderedTrivia = document.createElement('div');
-    renderedTrivia.className = "renderedTrivia";
-    renderedTrivia.innerHTML= "<br>- "+element.trivia+"<br>";
-    newItem.appendChild(renderedTrivia)
-}
 
-function renderMovieList(element, newItem) {
+//skapar div:arna jag sedan fyller med data
+function creatingDiv(element, parentDiv){
+    let createdDiv = document.createElement("div");
+    createdDiv.className = "createdDiv";
+    createdDiv.id = element.id;
+    createdDiv.innerHTML = element;
+
+    parentDiv.appendChild(createdDiv);
+    return createdDiv;
+};
+
+function creatingButton(element, parentDiv){
+    let buttonDiv = document.createElement("button");
+    buttonDiv.className = "buttonDiv";
+    buttonDiv.id = element.id;
+    buttonDiv.innerHTML = element;
+
+    parentDiv.appendChild(buttonDiv);
+
+};
+
+//Bygger ihop listan på filmer
+async function renderMovieList(listOfMovies){
+    let contentDiv= document.getElementById("rendered-content");
+    contentDiv.innerHTML ="";
+    let listOfTrivias = await getDataAsync("filmTrivia");
     let print;
-     fetch(localHost + "filmstudio")
-    .then(function (response) {
-        return response.json();
-    })
-    .then(function (json) {
 
-        let user = json[localStorage.getItem("userId")].id;
+    for (let i = 0; i < listOfMovies.length; i++) {
+        renderImage();
+        
+        print = "Namn: " + listOfMovies[i].name + "<br>Antal kopior: " + listOfMovies[i].stock + "<hr>";
+        // creatingDiv(print, contentDiv);
+        creatingButton("rent",creatingDiv(print, contentDiv));
 
-        if ( user!== null && element.stock != 0) {
-            print = "Namn: " + element.name + "<br>Antal kopior: " + element.stock + "<button class='rentButton' onclick='addRental("+element.id+","+user+")'>rent</button>" ;
+
+        for (let j = 0; j < listOfTrivias.length; j++) {
+
+            if (listOfMovies[i].id == listOfTrivias[j].filmId) {
+                creatingDiv("- "+listOfTrivias[j].trivia, contentDiv);
         }
-        else {
-            print = "Namn: " + element.name + "<br>Antal kopior: " + element.stock + "<hr>";
         }
-        fetch(localHost + "Filmtrivia")
-        .then(function (response) {
-            return response.json();
-        })
-        .then(function (json) {
-            const trivias = json.filter(a=>a.filmId == element.id)
-            trivias.forEach(trivia => {
-                renderTrivia(trivia, newItem);
-            });
-        });
-        newItem.innerHTML = print;             
-    });
-    renderImage();
-
+    };
 }
 
-//TODO: Fixa ReferenceError
-function getRentalsForStudio(element, createdDiv) {
-    fetch(localHost + "filmstudio")
-    .then(function (response) {
-        return response.json();
-    })
-    .then(function (user) {
-        if (user[localStorage.getItem("userId")].id === element.studioId) {
-            fetch(localHost + "film")
-            .then(function (response) {
-                return response.json();
-            })
-            .then(function (json) {
-                
-                json.forEach(movie => {
-                    if (movie.id === element.filmId) {
-                    let print = movie.name + "<br> <button class='returnButton' id='returnButton' onclick='"+element.returned+" = true'>return</button> <hr>";
-                        if (element.returned ==true) {
-                            deleteRental(element.id)
-                            }
-                        createdDiv.innerHTML = print;
-                    }
+//Bygger listan med filmer studion har hyrt
+async function renderRentalList(listOfRentals){
+    let contentDiv= document.getElementById("rendered-content");
+    contentDiv.innerHTML ="";
+
+     getDataAsync("filmStudio")
+    .then(function (userInStorage) {
+
+        const user = userInStorage[localStorage.getItem("userId")].id;
+        listOfRentals.forEach(rental => {
+            //Om RentalId:et matchar userId
+            if (rental.studioId == user) {
+                console.log(rental);
+
+                //hämta listan filmer
+                 getDataAsync("film")
+                .then(function (listOfMovies) {
+                    //leta i listan filmer efter en film som har samma id som rental:en
+                    listOfMovies.forEach(movie => {
+                        if (movie.id == rental.id) {
+                            //skicka varje film som mathar id:et till metoden som skriver ut filmen
+                            creatingDiv(movie.name, contentDiv);
+                            creatingButton("return",contentDiv);
+                        }
+                    });
+
                 });
-            });
-        }
+            }
+        });
     });
-}
+};
 
-//POST/DELETE-funktioner
 
-function addRental(element,user){
-    var data ={"filmId":element, "studioId":user};
-    var localhost ="https://localhost:44361/api/";
-    fetch(localhost+"RentedFilm", {
+//--------------------------------------
+
+//Post and Delete Data
+
+//ta in en endpoint och ett färdigbyggt objekt
+function addData(endpoint, object){
+    console.log(endpoint);
+    console.log(object);
+
+    //Gör en fetch med localhost och endpointen
+    //Inkludera det objektet(skall vara färdigbyggt)
+    var localhost = "https://localhost:44361/api/";
+    fetch(localhost + endpoint, {
         method: "POST",
         headers: {
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify(data),
+        body: JSON.stringify(object),
     })
     .then(response => response.json())
-    .then(data =>{
-        console.log("Success!!",data)
+    .then(data => {
+        console.log("Success!!", data)
     })
-    .catch((error)=>{
+    .catch((error) => {
         console.log(error)
     });
 };
 
-function deleteRental(id){
-    var localhost ="https://localhost:44361/api/";
-    console.log("Radera! "+id);
-    fetch(localhost+"RentedFilm/"+id, {
+//endpoint ska innehålla endpointen och id:et
+function deleteData(endpoint) {
+    var localhost = "https://localhost:44361/api/";
+    console.log("Radera! " + endpoint);
+    fetch(localhost + endpoint, {
         method: "DELETE",
     })
     .then(response => response.json())
 
 }
+
+//------------------------
