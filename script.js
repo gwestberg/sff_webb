@@ -1,11 +1,13 @@
 console.log("Hello World")
-console.log(localStorage.getItem("userId"));
 
 const localHost = "https://localhost:44361/api/";
+
 
 //--------------------------------------------------
 let login = document.getElementById("login");
 let displayUser = document.getElementById("userName");
+
+
 
 if (localStorage.getItem("userId") !== null) {
     showWelcomePage();
@@ -112,6 +114,16 @@ movieButton.addEventListener('click', function showMovies() {
     .catch(error => { console.log(error) });
 });
 
+
+//Fetchar alla Rentals
+let rentalButton = document.getElementById("rentalButton");
+rentalButton.addEventListener('click', function showRentals() {
+    getDataAsync("RentedFilm")
+    .then(data => renderRentalList(data))
+    .catch(error => { console.log(error) });
+});
+
+
 //Fetchar alla Studios
 // let studioButton = document.getElementById("studioButton");
 // studioButton.addEventListener('click', function showStudios() {
@@ -127,15 +139,6 @@ movieButton.addEventListener('click', function showMovies() {
 //         .then(data => console.log(data))
 //         .catch(error => { console.log(error) });
 // });
-
-//Fetchar alla Rentals
-let rentalButton = document.getElementById("rentalButton");
-rentalButton.addEventListener('click', function showRentals() {
-    getDataAsync("RentedFilm")
-        .then(data => renderRentalList(data))
-        .catch(error => { console.log(error) });
-});
-
 
 
 //------------------------------------------------
@@ -162,14 +165,24 @@ function creatingDiv(element, parentDiv){
     return createdDiv;
 };
 
-function creatingButton(element, parentDiv){
+//Ta in ett objekt som innehåller filmid och studioid, samt texten på knappen och "föräldradiven"
+function creatingButton(endpoint,id, data , text, parentDiv){
     let buttonDiv = document.createElement("button");
     buttonDiv.className = "buttonDiv";
-    buttonDiv.id = element.id;
-    buttonDiv.innerHTML = element;
-
+    buttonDiv.id = id;
+    buttonDiv.innerHTML = text;
+    
     parentDiv.appendChild(buttonDiv);
+    const button =document.getElementById(buttonDiv.id);
 
+    button.addEventListener('click', function(){
+        if (data != null) {
+            addData(endpoint,data);
+        }
+        else{
+            deleteData(endpoint,id);
+        }
+    });
 };
 
 //Bygger ihop listan på filmer
@@ -179,22 +192,32 @@ async function renderMovieList(listOfMovies){
     let listOfTrivias = await getDataAsync("filmTrivia");
     let print;
 
-    for (let i = 0; i < listOfMovies.length; i++) {
-        renderImage();
-        
-        print = "Namn: " + listOfMovies[i].name + "<br>Antal kopior: " + listOfMovies[i].stock + "<hr>";
-        // creatingDiv(print, contentDiv);
-        creatingButton("rent",creatingDiv(print, contentDiv));
+    getDataAsync("filmStudio")
+        .then(function (userInStorage) {
+           
+        const user = userInStorage[localStorage.getItem("userId")];
 
+            for (let i = 0; i < listOfMovies.length; i++) {
+                renderImage();
+                
+                print = "Namn: " + listOfMovies[i].name + "<br>Antal kopior: " + listOfMovies[i].stock + "<hr>";
+                if (user !=null) {
+                //skicka in endpointen samt filmid:et och användarId:et i ett datapaket
+                creatingButton( "Rentedfilm",listOfMovies[i].id, data={ "filmId":listOfMovies[i].id, "studioId":user.id},"rent",creatingDiv(print, contentDiv));
+                }
+                else{
+                    creatingDiv(print, contentDiv);
+                };
 
-        for (let j = 0; j < listOfTrivias.length; j++) {
-
-            if (listOfMovies[i].id == listOfTrivias[j].filmId) {
-                creatingDiv("- "+listOfTrivias[j].trivia, contentDiv);
-        }
-        }
-    };
-}
+                for (let j = 0; j < listOfTrivias.length; j++) {
+                    
+                    if (listOfMovies[i].id == listOfTrivias[j].filmId) {
+                        creatingDiv("- "+listOfTrivias[j].trivia, contentDiv);
+                    }
+                }
+            };
+        })
+};
 
 //Bygger listan med filmer studion har hyrt
 async function renderRentalList(listOfRentals){
@@ -208,17 +231,15 @@ async function renderRentalList(listOfRentals){
         listOfRentals.forEach(rental => {
             //Om RentalId:et matchar userId
             if (rental.studioId == user) {
-                console.log(rental);
-
                 //hämta listan filmer
                  getDataAsync("film")
                 .then(function (listOfMovies) {
                     //leta i listan filmer efter en film som har samma id som rental:en
                     listOfMovies.forEach(movie => {
-                        if (movie.id == rental.id) {
+                        if (movie.id == rental.filmId) {
                             //skicka varje film som mathar id:et till metoden som skriver ut filmen
-                            creatingDiv(movie.name, contentDiv);
-                            creatingButton("return",contentDiv);
+                            
+                            creatingButton("RentedFilm",rental.id,null, "return", creatingDiv(movie.name, contentDiv));
                         }
                     });
 
@@ -233,13 +254,14 @@ async function renderRentalList(listOfRentals){
 
 //Post and Delete Data
 
+
 //ta in en endpoint och ett färdigbyggt objekt
 function addData(endpoint, object){
     console.log(endpoint);
     console.log(object);
 
-    //Gör en fetch med localhost och endpointen
-    //Inkludera det objektet(skall vara färdigbyggt)
+    // Gör en fetch med localhost och endpointen
+    // Inkludera det objektet(skall vara färdigbyggt)
     var localhost = "https://localhost:44361/api/";
     fetch(localhost + endpoint, {
         method: "POST",
@@ -249,8 +271,8 @@ function addData(endpoint, object){
         body: JSON.stringify(object),
     })
     .then(response => response.json())
-    .then(data => {
-        console.log("Success!!", data)
+    .then(object => {
+        console.log("Success!!", object)
     })
     .catch((error) => {
         console.log(error)
@@ -258,14 +280,15 @@ function addData(endpoint, object){
 };
 
 //endpoint ska innehålla endpointen och id:et
-function deleteData(endpoint) {
+function deleteData(endpoint,id ) {
+    console.log(endpoint+id)
     var localhost = "https://localhost:44361/api/";
     console.log("Radera! " + endpoint);
-    fetch(localhost + endpoint, {
+    fetch(localhost + endpoint+"/"+id, {
         method: "DELETE",
     })
-    .then(response => response.json())
-
-}
+    .then(response => response.json());
+};
 
 //------------------------
+
