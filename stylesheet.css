@@ -2,21 +2,16 @@
     box-sizing: border-box;
   }
 
-.wrapper{
+/* .wrapper{
 display: flex;
-}
+} */
 
 .header{
     display:flex;
     justify-content: space-between;
-    height: 20%;
-    width: 100%;
-    position: fixed;
-    top: 0;
-    left: 0;
     background-color: white;
-    overflow-x: hidden;
     color: black;
+    width: 100%;
 }
 .header .login{
     display: block;
@@ -39,12 +34,13 @@ display: flex;
     width: 150px;
     display: block;
 }
-.header .button{
+.header .studioButton{
+    display: flex;
     background-color: rgb(0, 0, 0); 
     border: 1px solid rgb(0, 0, 0);
     color: white;
     margin-top: 2%;
-    margin-right: 2%;
+    margin-right: 5%;
     padding: 5px 30px;
     text-align: center;
     text-decoration: none;
@@ -52,7 +48,6 @@ display: flex;
     cursor: pointer;
     width: 100px;
     height: 50px;
-    display: block;
 }
 
 .header .headerText{
@@ -65,20 +60,22 @@ display: flex;
 
 
 /* Style the side navigation */
-.sidenav {
-    margin-top: 10%;
-    height: 85%;
-    width: 10%;
-    position: fixed;
-    z-index: 1;
+.navbar {
+    display: flex;
+    justify-content: flex-start;
+    flex-direction: row;
+    position: sticky;
+    margin-top: 2%;
+    padding: 0;
+    background-color: #333;
     top: 0;
-    left: 0;
-    background-color: #111;
-    overflow-x: hidden;
-    color: white;
+    width: 100%;
+    height: 10%;
 }
 
 .btn-group .button {
+    display: flex;
+    float: left;
     background-color: rgb(0, 0, 0); 
     border: 1px solid rgb(0, 0, 0);
     color: white;
@@ -88,22 +85,10 @@ display: flex;
     font-size: 16px;
     cursor: pointer;
     width: 150px;
-    display: block;
 }
 
 .btn-group .button:hover {
     background-color: #86868681;
-}
-.btn-group .userName{
-    background-color: rgb(0, 0, 0); 
-    border: 1px solid rgb(0, 0, 0);
-    color: rgb(18, 228, 193);
-    padding: 15px 32px;
-    text-align: center;
-    text-decoration: none;
-    font-size: 30px;
-    width: 150px;
-    display: block;
 }
 
 .logoutButton{
@@ -124,25 +109,23 @@ display: flex;
 
     height: 100%;
     width: 90%;
-    margin-top: 20%;
-    margin-left: 10%;
+    margin-top: 5%;
+    margin-left: 5%;
     padding-left: 2%;
     color: black;
 }
 
-  .movieImage{
-      margin-left: 10px;
+  .rendered-content .movieImage{
       width: 150px;
       height: 100px;
   }
-  .createdDiv{
+
+  .rendered-content .createdDiv{
       display: flex;
       flex-direction: column;
-      margin-left: 10px;
-      margin-bottom: 5%;
-      padding-bottom: 1%;
       font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
   }
+
   .buttonDiv{
     background-color: rgba(14, 105, 101, 0.74); 
     border: 1px solid rgb(0, 0, 0);

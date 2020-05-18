@@ -25,6 +25,8 @@ function showLoginPage() {
     displayUser.innerHTML = "Välkommen";
     document.getElementById("rentalButton").style.visibility = "hidden";
     document.getElementById("triviaButton").style.visibility = "hidden";
+    document.getElementById("studioButton").style.visibility = "visible";
+
 
 
     //Inline-kodning lägger till två inputfält och en logga-in knapp
@@ -69,6 +71,7 @@ function showErrorPage() {
 function showWelcomePage() {
     login.innerHTML = "";
     document.getElementById("rentalButton").style.visibility = "visible";
+    document.getElementById("triviaButton").style.visibility = "visible";
     document.getElementById("studioButton").style.visibility = "hidden";
 
     fetch(localHost + "filmstudio")
@@ -90,7 +93,7 @@ function showWelcomePage() {
     logoutButton.addEventListener("click", function () {
         localStorage.removeItem("userId");
         showLoginPage();
-        // location.reload();
+        location.reload();
     });
 };
 
@@ -213,6 +216,10 @@ async function renderMovieList(listOfMovies){
                         creatingDiv("- "+listOfTrivias[j].trivia, contentDiv);
                     }
                 }
+                var line = document.createElement('hr'); // Giving Horizontal Row After Heading
+                contentDiv.appendChild(line);
+                var line = document.createElement('br');
+                contentDiv.appendChild(line);
             };
         })
 };
@@ -247,7 +254,7 @@ async function renderRentalList(listOfRentals){
     });
 };
 
-//Visar ett formulär för att lägga till en Studio
+//Visar ett "formulär" för att lägga till en Studio
 function addStudio(){
 let studioAdd = document.getElementById("rendered-content") 
 //Töm sidan
@@ -333,7 +340,7 @@ submit.addEventListener("click", function () {
 
 
 //ta in en endpoint och ett färdigbyggt objekt
-function addData(endpoint, object){
+function addData(endpoint, object, ){
 
     // Gör en fetch med localhost och endpointen
     // Inkludera det objektet(skall vara färdigbyggt)
@@ -352,8 +359,6 @@ function addData(endpoint, object){
     .catch((error) => {
         console.log(error)
     });
-    let x= document.getElementById("rendered-content");
-    x.innerHTML ="Rental has been succesfully added";
 };
 
 //endpoint ska innehålla endpointen och id:et
@@ -363,8 +368,7 @@ function deleteData(endpoint,id ) {
         method: "DELETE",
     })
     .then(response => response.json());
-    let x= document.getElementById("rendered-content");
-    x.innerHTML ="Rental has been succesfully deleted";
+    location.reload();
 };
 
 //------------------------
