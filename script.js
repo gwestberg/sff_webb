@@ -24,6 +24,8 @@ function showLoginPage() {
     login.innerHTML = "";
     displayUser.innerHTML = "Välkommen";
     document.getElementById("rentalButton").style.visibility = "hidden";
+    document.getElementById("triviaButton").style.visibility = "hidden";
+
 
     //Inline-kodning lägger till två inputfält och en logga-in knapp
     login.insertAdjacentHTML("afterbegin", ' Name: <input class="login" id="loginUser" type="text"> Password: <input class="login" id="password" type="password"> <button class="loginbtn" id="loginbtn">Logga In</button>');
@@ -67,8 +69,7 @@ function showErrorPage() {
 function showWelcomePage() {
     login.innerHTML = "";
     document.getElementById("rentalButton").style.visibility = "visible";
-
-
+    document.getElementById("studioButton").style.visibility = "hidden";
 
     fetch(localHost + "filmstudio")
         .then(function (response) {
@@ -89,8 +90,9 @@ function showWelcomePage() {
     logoutButton.addEventListener("click", function () {
         localStorage.removeItem("userId");
         showLoginPage();
+        // location.reload();
     });
-}
+};
 
 //----------------------------------------------------
 
@@ -124,21 +126,17 @@ rentalButton.addEventListener('click', function showRentals() {
 });
 
 
-//Fetchar alla Studios
-// let studioButton = document.getElementById("studioButton");
-// studioButton.addEventListener('click', function showStudios() {
-//     getDataAsync("filmstudio")
-//         .then(data => console.log(data))
-//         .catch(error => { console.log(error) });
-// });
+//Lägger till studio
+let studioButton = document.getElementById("studioButton");
+studioButton.addEventListener('click', function renderStudioform() {
+    addStudio();
+});
 
-//Fetchar alla Trivias
-// let triviaButton = document.getElementById("triviaButton");
-// triviaButton.addEventListener('click', function showTrivias() {
-//     getDataAsync("filmTrivia")
-//         .then(data => console.log(data))
-//         .catch(error => { console.log(error) });
-// });
+// lägger till trivia
+let triviaButton = document.getElementById("triviaButton");
+triviaButton.addEventListener('click', function renderTriviaForm() {
+    addTrivia();
+});
 
 
 //------------------------------------------------
@@ -249,6 +247,85 @@ async function renderRentalList(listOfRentals){
     });
 };
 
+//Visar ett formulär för att lägga till en Studio
+function addStudio(){
+let studioAdd = document.getElementById("rendered-content") 
+//Töm sidan
+studioAdd.innerHTML = "";
+
+//Inline-kodning lägger till två inputfält och en logga-in knapp
+studioAdd.insertAdjacentHTML("afterbegin", ' Name: <input class="login" id="addUser" type="text"> Password: <input class="login" id="addPword" type="password"> <button class="submitBtn" id="submitBtn">Submit</button>');
+
+let loginButton = document.getElementById("submitBtn");
+
+//lyssnar på ett knapptryck och börjar processa informationen som angavs
+loginButton.addEventListener("click", function () {
+    let getUser = document.getElementById("addUser");
+    let getPass = document.getElementById("addPword");
+
+    data={ "name": getUser.value, "password": getPass.value, "verified": true}
+    addData("filmStudio", data);
+});
+
+};
+
+//Ett "formulär" för att lägga in en trivia
+function addTrivia(){
+let contentDiv = document.getElementById("rendered-content") 
+//Töm sidan
+contentDiv.innerHTML = "";
+
+var heading = document.createElement('h2'); // Heading of Form
+heading.innerHTML = "Add a Trivia";
+contentDiv.appendChild(heading);
+
+var line = document.createElement('hr'); // Giving Horizontal Row After Heading
+contentDiv.appendChild(line);
+
+var linebreak = document.createElement('br');
+contentDiv.appendChild(linebreak);
+
+var movieInputLabel = document.createElement('label'); // Create Label for Name Field
+movieInputLabel.innerHTML = "MovieId: "; // Set Field Labels
+contentDiv.appendChild(movieInputLabel);
+
+var movieDiv = document.createElement('input'); // Create Input Field for Name
+movieDiv.className = "inputField";
+movieDiv.id = "movieInput"
+contentDiv.appendChild(movieDiv);
+
+var linebreak = document.createElement('br');
+contentDiv.appendChild(linebreak);
+
+var triviaLabel = document.createElement('label'); // Append Textarea
+triviaLabel.innerHTML = "Trivia: ";
+contentDiv.appendChild(triviaLabel);
+
+var triviaDiv = document.createElement('textarea');
+triviaDiv.className ="input";
+triviaDiv.id ="triviaInput"
+contentDiv.appendChild(triviaDiv);
+
+var messagebreak = document.createElement('br');
+contentDiv.appendChild(messagebreak);
+
+var submitTriviaBtn = document.createElement('button'); // Append Submit Button
+submitTriviaBtn.className ="button";
+submitTriviaBtn.id ="submitBtn"
+submitTriviaBtn.innerText ="Submit";
+contentDiv.appendChild(submitTriviaBtn);
+
+let submit = document.getElementById("submitBtn");
+submit.addEventListener("click", function () {
+    let getMovie = document.getElementById("movieInput").value;
+    let getTrivia = document.getElementById("triviaInput").value;
+    let getMovieId = parseInt(getMovie);
+
+    data={ "filmId": getMovieId, "trivia": getTrivia}
+    addData("filmTrivia", data);
+});
+}
+
 
 //--------------------------------------
 
@@ -257,12 +334,10 @@ async function renderRentalList(listOfRentals){
 
 //ta in en endpoint och ett färdigbyggt objekt
 function addData(endpoint, object){
-    console.log(endpoint);
-    console.log(object);
 
     // Gör en fetch med localhost och endpointen
     // Inkludera det objektet(skall vara färdigbyggt)
-    var localhost = "https://localhost:44361/api/";
+    const localhost = "https://localhost:44361/api/";
     fetch(localhost + endpoint, {
         method: "POST",
         headers: {
@@ -277,17 +352,19 @@ function addData(endpoint, object){
     .catch((error) => {
         console.log(error)
     });
+    let x= document.getElementById("rendered-content");
+    x.innerHTML ="Rental has been succesfully added";
 };
 
 //endpoint ska innehålla endpointen och id:et
 function deleteData(endpoint,id ) {
-    console.log(endpoint+id)
-    var localhost = "https://localhost:44361/api/";
-    console.log("Radera! " + endpoint);
+    const localhost = "https://localhost:44361/api/";
     fetch(localhost + endpoint+"/"+id, {
         method: "DELETE",
     })
     .then(response => response.json());
+    let x= document.getElementById("rendered-content");
+    x.innerHTML ="Rental has been succesfully deleted";
 };
 
 //------------------------
