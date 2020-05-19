@@ -5,9 +5,6 @@ const localHost = "https://localhost:44361/api/";
 
 //--------------------------------------------------
 let login = document.getElementById("login");
-let displayUser = document.getElementById("userName");
-
-
 
 if (localStorage.getItem("userId") !== null) {
     showWelcomePage();
@@ -16,13 +13,12 @@ if (localStorage.getItem("userId") !== null) {
 }
 //--------------------------------------------------
 
-
 //Startstidan, login
 function showLoginPage() {
 
     //Töm sidan
     login.innerHTML = "";
-    displayUser.innerHTML = "Välkommen";
+    document.getElementById("adminPanel").style.visibility ="hidden";
     document.getElementById("rentalButton").style.visibility = "hidden";
     document.getElementById("triviaButton").style.visibility = "hidden";
     document.getElementById("studioButton").style.visibility = "visible";
@@ -79,26 +75,48 @@ function showWelcomePage() {
             return response.json();
         })
         .then(function (json) {
-
             const user = json[localStorage.getItem("userId")];
-            displayUser.innerHTML = user.name;
+            
+            //Inline kodning, lägger till en loggaut-knapp
+            login.insertAdjacentHTML("beforeend", "<div class='userName'>"+user.name+"</div><button class='logoutButton' id='logoutButton'>Logga Ut</button>");
+            
+            if (user.name ==="Uddebo") {
+                document.getElementById("adminPanel").style.visibility ="visible";
+            }
 
+            var logoutButton = document.getElementById("logoutButton");
+            
+            logoutButton.addEventListener("click", function () {
+                localStorage.removeItem("userId");
+                showLoginPage();
+                location.reload();
+            });
         });
-
-    //Inline kodning, lägger till en loggaut-knapp
-    login.insertAdjacentHTML("beforeend", "<div><button class='logoutButton' id='logoutButton'>Logga Ut</button></div>");
-
-    var logoutButton = document.getElementById("logoutButton");
-
-    logoutButton.addEventListener("click", function () {
-        localStorage.removeItem("userId");
-        showLoginPage();
-        location.reload();
-    });
 };
 
 //----------------------------------------------------
 
+
+/* When the user clicks on the button, 
+toggle between hiding and showing the dropdown content */
+// Stulad från w3schools
+function dropDownMenu() {
+    document.getElementById("myDropdown").classList.toggle("show");
+  }
+  
+  // Close the dropdown if the user clicks outside of it
+  window.onclick = function(event) {
+    if (!event.target.matches('.dropbtn')) {
+      var dropdowns = document.getElementsByClassName("dropdown-content");
+      var i;
+      for (i = 0; i < dropdowns.length; i++) {
+        var openDropdown = dropdowns[i];
+        if (openDropdown.classList.contains('show')) {
+          openDropdown.classList.remove('show');
+        }
+      }
+    }
+  }
 
 //Hämtning av Data
 //Hämtar data beroende på vilken endpoint som skickas in.
@@ -139,6 +157,11 @@ studioButton.addEventListener('click', function renderStudioform() {
 let triviaButton = document.getElementById("triviaButton");
 triviaButton.addEventListener('click', function renderTriviaForm() {
     addTrivia();
+});
+
+let userName = document.getElementById("home");
+userName.addEventListener('click', function(){
+    location.reload();
 });
 
 
@@ -256,22 +279,61 @@ async function renderRentalList(listOfRentals){
 
 //Visar ett "formulär" för att lägga till en Studio
 function addStudio(){
-let studioAdd = document.getElementById("rendered-content") 
+let contentDiv = document.getElementById("rendered-content") 
 //Töm sidan
-studioAdd.innerHTML = "";
+contentDiv.innerHTML = "";
 
-//Inline-kodning lägger till två inputfält och en logga-in knapp
-studioAdd.insertAdjacentHTML("afterbegin", ' Name: <input class="login" id="addUser" type="text"> Password: <input class="login" id="addPword" type="password"> <button class="submitBtn" id="submitBtn">Submit</button>');
+var heading = document.createElement('h2'); // Heading of Form
+heading.innerHTML = "Create Account";
+contentDiv.appendChild(heading);
 
-let loginButton = document.getElementById("submitBtn");
+var line = document.createElement('hr'); // Giving Horizontal Row After Heading
+contentDiv.appendChild(line);
 
+var linebreak = document.createElement('br');
+contentDiv.appendChild(linebreak);
+
+var movieInputLabel = document.createElement('label'); // Create Label for Name Field
+movieInputLabel.innerHTML = "Studio Name: "; // Set Field Labels
+contentDiv.appendChild(movieInputLabel);
+
+var studioInput = document.createElement('input'); // Create Input Field for Name
+studioInput.className = "studioName";
+studioInput.id = "studioName"
+contentDiv.appendChild(studioInput);
+
+var linebreak = document.createElement('br');
+contentDiv.appendChild(linebreak);
+
+var movieInputLabel = document.createElement('label'); // Create Label for Name Field
+movieInputLabel.innerHTML = "Password: "; // Set Field Labels
+contentDiv.appendChild(movieInputLabel);
+
+var studioPasswInput = document.createElement('input'); // Create Input Field for Name
+studioPasswInput.type = "password";
+studioPasswInput.className = "studioPass";
+studioPasswInput.id = "studioPass"
+contentDiv.appendChild(studioPasswInput);
+
+var linebreak = document.createElement('br');
+contentDiv.appendChild(linebreak);
+
+var submitStudioBtn = document.createElement('button'); // Append Submit Button
+submitStudioBtn.className ="button";
+submitStudioBtn.id ="submitBtn"
+submitStudioBtn.innerText ="Submit";
+contentDiv.appendChild(submitStudioBtn);
+
+let submitButton = document.getElementById("submitBtn");
 //lyssnar på ett knapptryck och börjar processa informationen som angavs
-loginButton.addEventListener("click", function () {
-    let getUser = document.getElementById("addUser");
-    let getPass = document.getElementById("addPword");
+submitButton.addEventListener("click", function () {
+    let getUser = document.getElementById("studioName");
+    let getPass = document.getElementById("studioPass");
 
-    data={ "name": getUser.value, "password": getPass.value, "verified": true}
-    addData("filmStudio", data);
+     if (getUser !==null || getPass !== null) {
+         data={ "name": getUser.value, "password": getPass.value, "verified": true}
+         addData("filmStudio", data);
+     }
 });
 
 };

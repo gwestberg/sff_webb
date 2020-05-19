@@ -18,17 +18,25 @@
                 <div class="header ">
                     <div class="headerText"><h2>Svenska Förenade Filmstudios</h2></div>
                     <div class="login" id="login"></div>
-                    <div class="studioButton" id="studioButton">Add Studio</div>
+                    <div class="studioButton" id="studioButton">Create Account</div>
                 </div>
             </div>
-                    <div class="navbar">
-                        <div class="btn-group">
-                            <div class="button" id="userName"></div>
-                            <button class="button" id="movieButton">Movies</button>
-                            <button class="button" id="rentalButton">Rentals</button>
-                            <button class="button" id="triviaButton">Add Trivia</button>
-                        </div>
-                
+            <div class="navbar">
+                <div class="btn-group">
+                    <button class="button" id="home">Start</button>
+                    <button class="button" id="movieButton">Movies</button>
+                    <button class="button" id="rentalButton">Rentals</button>
+                    <button class="button" id="triviaButton">Add Trivia</button>
+                </div>
+                <!-- stulad från w3schools -->
+                <div id= "adminPanel" class="dropdown">
+                    <button onclick="dropDownMenu()" class="dropbtn">Admin</button>
+                    <div id="myDropdown" class="dropdown-content">
+                        <button id="addMovie">Add Movie</button>
+                        <button id="addMovie">View all Rentals</button>
+                    </div>
+                  </div>
+                  <!---------------------------->
             </div>
         </header>
 
