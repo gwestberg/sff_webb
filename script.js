@@ -103,7 +103,6 @@ toggle between hiding and showing the dropdown content */
 function dropDownMenu() {
     document.getElementById("myDropdown").classList.toggle("show");
   }
-  
   // Close the dropdown if the user clicks outside of it
   window.onclick = function(event) {
     if (!event.target.matches('.dropbtn')) {
@@ -117,6 +116,8 @@ function dropDownMenu() {
       }
     }
   }
+//-----------------------------------------------
+
 
 //Hämtning av Data
 //Hämtar data beroende på vilken endpoint som skickas in.
@@ -286,17 +287,16 @@ contentDiv.innerHTML = "";
 var heading = document.createElement('h2'); // Heading of Form
 heading.innerHTML = "Create Account";
 contentDiv.appendChild(heading);
-
 var line = document.createElement('hr'); // Giving Horizontal Row After Heading
 contentDiv.appendChild(line);
-
 var linebreak = document.createElement('br');
 contentDiv.appendChild(linebreak);
 
 var movieInputLabel = document.createElement('label'); // Create Label for Name Field
 movieInputLabel.innerHTML = "Studio Name: "; // Set Field Labels
 contentDiv.appendChild(movieInputLabel);
-
+var linebreak = document.createElement('br');
+contentDiv.appendChild(linebreak);
 var studioInput = document.createElement('input'); // Create Input Field for Name
 studioInput.className = "studioName";
 studioInput.id = "studioName"
@@ -308,7 +308,8 @@ contentDiv.appendChild(linebreak);
 var movieInputLabel = document.createElement('label'); // Create Label for Name Field
 movieInputLabel.innerHTML = "Password: "; // Set Field Labels
 contentDiv.appendChild(movieInputLabel);
-
+var linebreak = document.createElement('br');
+contentDiv.appendChild(linebreak);
 var studioPasswInput = document.createElement('input'); // Create Input Field for Name
 studioPasswInput.type = "password";
 studioPasswInput.className = "studioPass";
@@ -317,9 +318,11 @@ contentDiv.appendChild(studioPasswInput);
 
 var linebreak = document.createElement('br');
 contentDiv.appendChild(linebreak);
+var linebreak = document.createElement('br');
+contentDiv.appendChild(linebreak);
 
 var submitStudioBtn = document.createElement('button'); // Append Submit Button
-submitStudioBtn.className ="button";
+submitStudioBtn.className ="submitStudioBtn";
 submitStudioBtn.id ="submitBtn"
 submitStudioBtn.innerText ="Submit";
 contentDiv.appendChild(submitStudioBtn);
@@ -347,17 +350,16 @@ contentDiv.innerHTML = "";
 var heading = document.createElement('h2'); // Heading of Form
 heading.innerHTML = "Add a Trivia";
 contentDiv.appendChild(heading);
-
 var line = document.createElement('hr'); // Giving Horizontal Row After Heading
 contentDiv.appendChild(line);
-
 var linebreak = document.createElement('br');
 contentDiv.appendChild(linebreak);
 
 var movieInputLabel = document.createElement('label'); // Create Label for Name Field
 movieInputLabel.innerHTML = "MovieId: "; // Set Field Labels
 contentDiv.appendChild(movieInputLabel);
-
+var linebreak = document.createElement('br');
+contentDiv.appendChild(linebreak);
 var movieDiv = document.createElement('input'); // Create Input Field for Name
 movieDiv.className = "inputField";
 movieDiv.id = "movieInput"
@@ -369,7 +371,8 @@ contentDiv.appendChild(linebreak);
 var triviaLabel = document.createElement('label'); // Append Textarea
 triviaLabel.innerHTML = "Trivia: ";
 contentDiv.appendChild(triviaLabel);
-
+var linebreak = document.createElement('br');
+contentDiv.appendChild(linebreak);
 var triviaDiv = document.createElement('textarea');
 triviaDiv.className ="input";
 triviaDiv.id ="triviaInput"
@@ -379,10 +382,12 @@ var messagebreak = document.createElement('br');
 contentDiv.appendChild(messagebreak);
 
 var submitTriviaBtn = document.createElement('button'); // Append Submit Button
-submitTriviaBtn.className ="button";
+submitTriviaBtn.className ="submitTriviaBtn";
 submitTriviaBtn.id ="submitBtn"
 submitTriviaBtn.innerText ="Submit";
 contentDiv.appendChild(submitTriviaBtn);
+
+
 
 let submit = document.getElementById("submitBtn");
 submit.addEventListener("click", function () {
