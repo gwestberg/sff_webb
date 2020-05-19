@@ -54,6 +54,7 @@ function showLoginPage() {
                 } else {
                     showErrorPage();
                 }
+                location.reload();
             });
     });
 }
@@ -132,7 +133,7 @@ async function getDataAsync(endpoint) {
 
 //Fetchar alla Filmer
 let movieButton = document.getElementById("movieButton");
-movieButton.addEventListener('click', function showMovies() {
+movieButton.addEventListener('click', async function showMovies() {
     getDataAsync("film")
     .then(data => renderMovieList(data))
     .catch(error => { console.log(error) });
@@ -140,11 +141,26 @@ movieButton.addEventListener('click', function showMovies() {
 
 
 //Fetchar alla Rentals
-let rentalButton = document.getElementById("rentalButton");
-rentalButton.addEventListener('click', function showRentals() {
-    getDataAsync("RentedFilm")
-    .then(data => renderRentalList(data))
-    .catch(error => { console.log(error) });
+let viewRentals = document.getElementById("rentalButton");
+viewRentals.addEventListener('click', async function showRentals() {
+    try {
+        const data = await getDataAsync("RentedFilm");
+        return await renderRentalList(data);
+    }
+    catch (error) {
+        console.log(error);
+    }
+    
+});
+
+//Fetchar alla Rentals,filmer och studios
+let rentalButton = document.getElementById("viewRentals");
+rentalButton.addEventListener('click', async function showRentals() {
+    let rentals= await getDataAsync("RentedFilm");
+    let film= await getDataAsync("film");
+    let studios= await getDataAsync("filmStudio");
+
+    renderAllRentals(film, rentals, studios);
 });
 
 
@@ -165,6 +181,10 @@ userName.addEventListener('click', function(){
     location.reload();
 });
 
+let addMovieToList = document.getElementById("addMovie");
+addMovieToList.addEventListener('click', function(){
+    addMovie();
+});
 
 //------------------------------------------------
 
@@ -193,12 +213,14 @@ function creatingDiv(element, parentDiv){
 //Ta in ett objekt som innehåller filmid och studioid, samt texten på knappen och "föräldradiven"
 function creatingButton(endpoint,id, data , text, parentDiv){
     let buttonDiv = document.createElement("button");
-    buttonDiv.className = "buttonDiv";
+    buttonDiv.className = "submitBtn";
     buttonDiv.id = id;
     buttonDiv.innerHTML = text;
     
     parentDiv.appendChild(buttonDiv);
     const button =document.getElementById(buttonDiv.id);
+    var linebreak = document.createElement('br');
+    parentDiv.appendChild(linebreak);
 
     button.addEventListener('click', function(){
         if (data != null) {
@@ -229,6 +251,7 @@ async function renderMovieList(listOfMovies){
                 if (user !=null) {
                 //skicka in endpointen samt filmid:et och användarId:et i ett datapaket
                 creatingButton( "Rentedfilm",listOfMovies[i].id, data={ "filmId":listOfMovies[i].id, "studioId":user.id},"rent",creatingDiv(print, contentDiv));
+                // creatingButton( "filmTrivia",listOfMovies[i].id, data={ "filmId":listOfMovies[i].id, "studioId":user.id},"Add Trivia",contentDiv);
                 }
                 else{
                     creatingDiv(print, contentDiv);
@@ -246,10 +269,10 @@ async function renderMovieList(listOfMovies){
                 contentDiv.appendChild(line);
             };
         })
-};
+}
 
 //Bygger listan med filmer studion har hyrt
-async function renderRentalList(listOfRentals){
+function renderRentalList(listOfRentals){
     let contentDiv= document.getElementById("rendered-content");
     contentDiv.innerHTML ="";
 
@@ -267,7 +290,7 @@ async function renderRentalList(listOfRentals){
                     listOfMovies.forEach(movie => {
                         if (movie.id == rental.filmId) {
                             //skicka varje film som mathar id:et till metoden som skriver ut filmen
-                            
+                            renderImage();
                             creatingButton("RentedFilm",rental.id,null, "return", creatingDiv(movie.name, contentDiv));
                         }
                     });
@@ -276,7 +299,14 @@ async function renderRentalList(listOfRentals){
             }
         });
     });
-};
+}
+
+
+function renderAllRentals(listofmovies, listofrentals, listofstudios){
+    let contentDiv = document.getElementById("rendered-content");
+
+        console.log(listofmovies,listofrentals,listofstudios);
+}
 
 //Visar ett "formulär" för att lägga till en Studio
 function addStudio(){
@@ -322,7 +352,7 @@ var linebreak = document.createElement('br');
 contentDiv.appendChild(linebreak);
 
 var submitStudioBtn = document.createElement('button'); // Append Submit Button
-submitStudioBtn.className ="submitStudioBtn";
+submitStudioBtn.className ="submitBtn";
 submitStudioBtn.id ="submitBtn"
 submitStudioBtn.innerText ="Submit";
 contentDiv.appendChild(submitStudioBtn);
@@ -339,7 +369,7 @@ submitButton.addEventListener("click", function () {
      }
 });
 
-};
+}
 
 //Ett "formulär" för att lägga in en trivia
 function addTrivia(){
@@ -382,7 +412,7 @@ var messagebreak = document.createElement('br');
 contentDiv.appendChild(messagebreak);
 
 var submitTriviaBtn = document.createElement('button'); // Append Submit Button
-submitTriviaBtn.className ="submitTriviaBtn";
+submitTriviaBtn.className ="submitBtn";
 submitTriviaBtn.id ="submitBtn"
 submitTriviaBtn.innerText ="Submit";
 contentDiv.appendChild(submitTriviaBtn);
@@ -400,6 +430,71 @@ submit.addEventListener("click", function () {
 });
 }
 
+function addMovie(){
+    let contentDiv = document.getElementById("rendered-content") 
+    //Töm sidan
+    contentDiv.innerHTML = "";
+    
+    var heading = document.createElement('h2'); // Heading of Form
+    heading.innerHTML = "Add a Movie";
+    contentDiv.appendChild(heading);
+    var line = document.createElement('hr'); // Giving Horizontal Row After Heading
+    contentDiv.appendChild(line);
+    var linebreak = document.createElement('br');
+    contentDiv.appendChild(linebreak);
+    
+    var movieInputLabel = document.createElement('label'); // Create Label for Name Field
+    movieInputLabel.innerHTML = "Movie Name: "; // Set Field Labels
+    contentDiv.appendChild(movieInputLabel);
+    var linebreak = document.createElement('br');
+    contentDiv.appendChild(linebreak);
+    var studioInput = document.createElement('input'); // Create Input Field for Name
+    studioInput.className = "movieName";
+    studioInput.id = "movieName"
+    contentDiv.appendChild(studioInput);
+    
+    var linebreak = document.createElement('br');
+    contentDiv.appendChild(linebreak);
+    var linebreak = document.createElement('br');
+    contentDiv.appendChild(linebreak);
+    
+    var movieInputLabel = document.createElement('label'); // Create Label for Name Field
+    movieInputLabel.innerHTML = "Number in stock: "; // Set Field Labels
+    contentDiv.appendChild(movieInputLabel);
+    var linebreak = document.createElement('br');
+    contentDiv.appendChild(linebreak);
+    var studioPasswInput = document.createElement('input'); // Create Input Field for Name
+    studioPasswInput.type = "text";
+    studioPasswInput.id = "stock"
+    contentDiv.appendChild(studioPasswInput);
+    
+    var linebreak = document.createElement('br');
+    contentDiv.appendChild(linebreak);
+    var linebreak = document.createElement('br');
+    contentDiv.appendChild(linebreak);
+    
+    var submitStudioBtn = document.createElement('button'); // Append Submit Button
+    submitStudioBtn.className ="submitBtn";
+    submitStudioBtn.id ="submitBtn"
+    submitStudioBtn.innerText ="Submit";
+    contentDiv.appendChild(submitStudioBtn);
+    
+    let submitButton = document.getElementById("submitBtn");
+    //lyssnar på ett knapptryck och börjar processa informationen som angavs
+    submitButton.addEventListener("click", function () {
+        let getMovie = document.getElementById("movieName");
+        let getStock = document.getElementById("stock");
+
+        let parsedStock = parseInt(getStock.value);
+    
+         if (getMovie !==null || getStock !== null) {
+             data={ "name": getMovie.value, "stock": parsedStock}
+             addData("film", data);
+         }
+    });
+    
+}
+    
 
 //--------------------------------------
 
@@ -438,5 +533,21 @@ function deleteData(endpoint,id ) {
     location.reload();
 };
 
+
+function updateData(endpoint, id){
+    const localhost = "https://localhost:44361/api/";
+    fetch(localhost + endpoint+ "/" + id, {
+        method: 'PUT',
+        body: JSON.stringify({
+         data
+        })
+      }).then((response) => {
+        response.json().then((response) => {
+          console.log(response);
+        })
+      }).catch(err => {
+        console.error(err)
+      })
+}
 //------------------------
 

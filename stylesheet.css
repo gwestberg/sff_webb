@@ -2,7 +2,18 @@
     box-sizing: border-box;
   }
 
-
+.submitBtn{
+    background-color: rgba(14, 105, 101, 0.74); 
+    border: 1px solid rgb(0, 0, 0);
+    color: white;
+    padding: 10px;
+    text-align: center;
+    text-decoration: none;
+    font-size: 14px;
+    cursor: pointer;
+    width: 100px;
+    display: block;  
+}
 /* Header */
 .header{
     display:flex;
@@ -58,6 +69,9 @@
     display: block;
 
 }
+.button:hover {
+    background-color: #86868681;
+}
 .header .studioButton{
     display: flex;
     background-color: rgba(14, 105, 101, 0.836); 
@@ -101,9 +115,6 @@
     cursor: pointer;
     width: 150px;
 }
-.navbar .button:hover {
-    background-color: #86868681;
-}
 
 /* -------------- */
 
@@ -143,45 +154,11 @@
     width: 150px;
     display: block;
   }
+
+  .movieImage{
+      margin-top: 3%;
+  }
 /* ----------------------------- */
-
-
-
-/* Add Trivia */
-
-.submitTriviaBtn{
-    background-color: rgba(14, 105, 101, 0.74); 
-    border: 1px solid rgb(0, 0, 0);
-    color: white;
-    padding: 10px;
-    text-align: center;
-    text-decoration: none;
-    font-size: 14px;
-    cursor: pointer;
-    width: 100px;
-    display: block;
-}
-
-
-/* --------------------------- */
-
-
-
-/* Add Studio */
-.submitStudioBtn{
-    background-color: rgba(14, 105, 101, 0.74); 
-    border: 1px solid rgb(0, 0, 0);
-    color: white;
-    padding: 10px;
-    text-align: center;
-    text-decoration: none;
-    font-size: 14px;
-    cursor: pointer;
-    width: 100px;
-    display: block;
-}
-/* ----------------------------- */
-
 
 
 /* dropdown meny , stulad från w3schools */
@@ -212,21 +189,22 @@
     min-width: 100px;
     right: 0;
     overflow: auto;
-    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
     z-index: 1;
   }
   
   .dropdown-content button {
     color: black;
     cursor: pointer;
-    padding: 12px 16px;
+    padding: 10px 25px;
     text-decoration: none;
     display: block;
-
+    border: 1px solid rgba(0, 0, 0, 0.253);
   }
   
-  .dropdown div:hover {background-color: #ddd;}
+  .dropdown button:hover {
+      background-color: rgb(143, 143, 143);}
   
-  .show {display: block;}
+  .show {
+      display: block;}
 
   /* --------------------------------- */
