@@ -1,6 +1,7 @@
 console.log("Hello World")
 
 const localHost = "https://localhost:44361/api/";
+const adminPanel = document.getElementById("adminPanel");
 
 
 //--------------------------------------------------
@@ -70,6 +71,8 @@ function showWelcomePage() {
     document.getElementById("rentalButton").style.visibility = "visible";
     document.getElementById("triviaButton").style.visibility = "visible";
     document.getElementById("studioButton").style.visibility = "hidden";
+    document.getElementById("adminPanel").style.visibility ="hidden";
+
 
     fetch(localHost + "filmstudio")
         .then(function (response) {
@@ -77,13 +80,13 @@ function showWelcomePage() {
         })
         .then(function (json) {
             const user = json[localStorage.getItem("userId")];
+            if (user.verified === true) {
+                document.getElementById("adminPanel").style.visibility ="visible";
+            }
             
             //Inline kodning, lägger till en loggaut-knapp
             login.insertAdjacentHTML("beforeend", "<div class='userName'>"+user.name+"</div><button class='logoutButton' id='logoutButton'>Logga Ut</button>");
             
-            if (user.name ==="Uddebo") {
-                document.getElementById("adminPanel").style.visibility ="visible";
-            }
 
             var logoutButton = document.getElementById("logoutButton");
             
@@ -92,7 +95,10 @@ function showWelcomePage() {
                 showLoginPage();
                 location.reload();
             });
-        });
+        })
+        .then(function(user){
+            
+        })
 };
 
 //----------------------------------------------------
@@ -135,6 +141,14 @@ async function getDataAsync(endpoint) {
 let movieButton = document.getElementById("movieButton");
 movieButton.addEventListener('click', async function showMovies() {
     getDataAsync("film")
+    .then(data => renderMovieList(data))
+    .catch(error => { console.log(error) });
+});
+
+//Fetchar alla Studios
+let movieButton = document.getElementById("movieButton");
+movieButton.addEventListener('click', async function showMovies() {
+    getDataAsync("filmStudio")
     .then(data => renderMovieList(data))
     .catch(error => { console.log(error) });
 });
@@ -203,11 +217,24 @@ function renderImage() {
 function creatingDiv(element, parentDiv){
     let createdDiv = document.createElement("div");
     createdDiv.className = "createdDiv";
-    createdDiv.id = element.id;
+    // createdDiv.id = element.id;
     createdDiv.innerHTML = element;
 
     parentDiv.appendChild(createdDiv);
     return createdDiv;
+};
+
+function createLabelandInput(contentDiv,labelText,elementtype,elementId) {
+    var InputLabel = document.createElement('label'); // Create Label for Name Field
+    InputLabel.innerHTML = labelText; // Set Field Labels
+    contentDiv.appendChild(InputLabel);
+    var linebreak = document.createElement('br');
+    contentDiv.appendChild(linebreak);
+    var inputField = document.createElement(elementtype); // Create Input Field for Name
+    inputField.className = elementId;
+    inputField.id = elementId;
+    contentDiv.appendChild(inputField);
+    return inputField;
 };
 
 //Ta in ett objekt som innehåller filmid och studioid, samt texten på knappen och "föräldradiven"
@@ -301,11 +328,30 @@ function renderRentalList(listOfRentals){
     });
 }
 
-
+//Visar alla studios Rentals
 function renderAllRentals(listofmovies, listofrentals, listofstudios){
     let contentDiv = document.getElementById("rendered-content");
+    contentDiv.innerHTML="";
 
-        console.log(listofmovies,listofrentals,listofstudios);
+    listofstudios.forEach(studio => {
+        let print= studio.name;
+        let studioDiv= creatingDiv(print, contentDiv);
+        studioDiv.className= "studioDiv";
+
+        for (let i = 0; i < listofrentals.length; i++) {
+
+            if (listofrentals[i].studioId === studio.id) {
+                listofmovies.forEach(movie => {
+
+                    if (movie.id === listofrentals[i].filmId) {
+                        creatingDiv(movie.name, contentDiv);
+                    }
+                });
+            }            
+        }
+        var line = document.createElement('hr'); // Giving Horizontal Row After Heading
+        contentDiv.appendChild(line);
+    });
 }
 
 //Visar ett "formulär" för att lägga till en Studio
@@ -322,34 +368,14 @@ contentDiv.appendChild(line);
 var linebreak = document.createElement('br');
 contentDiv.appendChild(linebreak);
 
-var movieInputLabel = document.createElement('label'); // Create Label for Name Field
-movieInputLabel.innerHTML = "Studio Name: "; // Set Field Labels
-contentDiv.appendChild(movieInputLabel);
-var linebreak = document.createElement('br');
-contentDiv.appendChild(linebreak);
-var studioInput = document.createElement('input'); // Create Input Field for Name
-studioInput.className = "studioName";
-studioInput.id = "studioName"
-contentDiv.appendChild(studioInput);
+createLabelandInput(contentDiv, "Studio Name: ",'input' ,"studioName");
 
 var linebreak = document.createElement('br');
 contentDiv.appendChild(linebreak);
 
-var movieInputLabel = document.createElement('label'); // Create Label for Name Field
-movieInputLabel.innerHTML = "Password: "; // Set Field Labels
-contentDiv.appendChild(movieInputLabel);
-var linebreak = document.createElement('br');
-contentDiv.appendChild(linebreak);
-var studioPasswInput = document.createElement('input'); // Create Input Field for Name
-studioPasswInput.type = "password";
-studioPasswInput.className = "studioPass";
-studioPasswInput.id = "studioPass"
-contentDiv.appendChild(studioPasswInput);
 
-var linebreak = document.createElement('br');
-contentDiv.appendChild(linebreak);
-var linebreak = document.createElement('br');
-contentDiv.appendChild(linebreak);
+var studioPasswInput= createLabelandInput(contentDiv, "Password: ", 'input',"studioPw");
+studioPasswInput.type="password"
 
 var submitStudioBtn = document.createElement('button'); // Append Submit Button
 submitStudioBtn.className ="submitBtn";
@@ -364,7 +390,7 @@ submitButton.addEventListener("click", function () {
     let getPass = document.getElementById("studioPass");
 
      if (getUser !==null || getPass !== null) {
-         data={ "name": getUser.value, "password": getPass.value, "verified": true}
+         data={ "name": getUser.value, "password": getPass.value, "verified": false}
          addData("filmStudio", data);
      }
 });
@@ -385,31 +411,13 @@ contentDiv.appendChild(line);
 var linebreak = document.createElement('br');
 contentDiv.appendChild(linebreak);
 
-var movieInputLabel = document.createElement('label'); // Create Label for Name Field
-movieInputLabel.innerHTML = "MovieId: "; // Set Field Labels
-contentDiv.appendChild(movieInputLabel);
-var linebreak = document.createElement('br');
-contentDiv.appendChild(linebreak);
-var movieDiv = document.createElement('input'); // Create Input Field for Name
-movieDiv.className = "inputField";
-movieDiv.id = "movieInput"
-contentDiv.appendChild(movieDiv);
+createLabelandInput(contentDiv, "MovieId: ", 'input', "movieInput");
+
 
 var linebreak = document.createElement('br');
 contentDiv.appendChild(linebreak);
 
-var triviaLabel = document.createElement('label'); // Append Textarea
-triviaLabel.innerHTML = "Trivia: ";
-contentDiv.appendChild(triviaLabel);
-var linebreak = document.createElement('br');
-contentDiv.appendChild(linebreak);
-var triviaDiv = document.createElement('textarea');
-triviaDiv.className ="input";
-triviaDiv.id ="triviaInput"
-contentDiv.appendChild(triviaDiv);
-
-var messagebreak = document.createElement('br');
-contentDiv.appendChild(messagebreak);
+createLabelandInput(contentDiv, "Trivia: ", 'textarea', "triviaInput");
 
 var submitTriviaBtn = document.createElement('button'); // Append Submit Button
 submitTriviaBtn.className ="submitBtn";
@@ -430,6 +438,7 @@ submit.addEventListener("click", function () {
 });
 }
 
+//Ett "formulär" för att lägga in en film
 function addMovie(){
     let contentDiv = document.getElementById("rendered-content") 
     //Töm sidan
@@ -494,7 +503,12 @@ function addMovie(){
     });
     
 }
-    
+
+
+//Godkänna Studios
+function approveStudio(){
+
+}
 
 //--------------------------------------
 
@@ -506,8 +520,7 @@ function addData(endpoint, object, ){
 
     // Gör en fetch med localhost och endpointen
     // Inkludera det objektet(skall vara färdigbyggt)
-    const localhost = "https://localhost:44361/api/";
-    fetch(localhost + endpoint, {
+    fetch(localHost + endpoint, {
         method: "POST",
         headers: {
             'Content-Type': 'application/json',
@@ -525,8 +538,7 @@ function addData(endpoint, object, ){
 
 //endpoint ska innehålla endpointen och id:et
 function deleteData(endpoint,id ) {
-    const localhost = "https://localhost:44361/api/";
-    fetch(localhost + endpoint+"/"+id, {
+    fetch(localHost + endpoint+"/"+id, {
         method: "DELETE",
     })
     .then(response => response.json());
@@ -535,8 +547,7 @@ function deleteData(endpoint,id ) {
 
 
 function updateData(endpoint, id){
-    const localhost = "https://localhost:44361/api/";
-    fetch(localhost + endpoint+ "/" + id, {
+    fetch(localHost + endpoint+ "/" + id, {
         method: 'PUT',
         body: JSON.stringify({
          data

@@ -14,6 +14,9 @@
     width: 100px;
     display: block;  
 }
+
+
+
 /* Header */
 .header{
     display:flex;
@@ -158,6 +161,22 @@
   .movieImage{
       margin-top: 3%;
   }
+
+  .studioDiv{
+      font-size: 26px;
+      text-decoration: underline;
+      margin-bottom: 1%;
+      margin-top: 3%;
+  }
+
+
+  .studioPw{
+      margin-bottom: 2%;
+  }
+  .triviaInput{
+    margin-bottom: 2%;
+  }
+
 /* ----------------------------- */
 
 
