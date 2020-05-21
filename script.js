@@ -136,7 +136,7 @@ async function getDataAsync(endpoint) {
 
 //Buttons
 
-//Fetch all Filmer
+//Fetch all movies
 let movieButton = document.getElementById("movieButton");
 movieButton.addEventListener('click', async function showMovies() {
     getDataAsync("film")
@@ -157,7 +157,7 @@ rentalsButton.addEventListener('click', async function showRentals() {
     
 });
 
-//viewRentals for admin
+//Admin - view all rentals
 let rentalButton = document.getElementById("viewRentals");
 rentalButton.addEventListener('click', async function showRentals() {
     let rentals= await getDataAsync("RentedFilm");
@@ -179,10 +179,20 @@ addTriviaButton.addEventListener('click', function renderTriviaForm() {
     addTrivia();
 });
 
-//add Movie
+//Admin - add Movie
 let addMovieButton = document.getElementById("addMovie");
 addMovieButton.addEventListener('click', function(){
     addMovie();
+});
+
+//Admin - view studios that needs approval
+let viewApprovalsBtn = document.getElementById("viewApprovals");
+viewApprovalsBtn.addEventListener('click', async function(){
+    await getDataAsync("filmStudio")
+    .then(response => response.filter(studio => studio.verified == 0))
+    .then(studio => approveStudio(studio))
+    
+    
 });
 
 //HomeButton
@@ -232,7 +242,7 @@ function createLabelandInput(contentDiv,labelText,elementtype,elementId) {
 };
 
 //creating a button with some functionality. Needs alot of refactoring :/
-function creatingButton(endpoint,id, data , text, parentDiv){
+function creatingButton(typeOfAction, endpoint, id, data, text, parentDiv){
     let buttonDiv = document.createElement("button");
     buttonDiv.className = "submitBtn";
     buttonDiv.id = id;
@@ -244,15 +254,21 @@ function creatingButton(endpoint,id, data , text, parentDiv){
     parentDiv.appendChild(linebreak);
 
     button.addEventListener('click', function(){
-        if (data != null) {
-            addData(endpoint,data);
+        if (typeOfAction==="add") {
+            addData(endpoint, data);
         }
-        else{
-            deleteData(endpoint,id);
+
+        if(typeOfAction==="update"){
+            updateData(endpoint, id, data);
+        }
+
+        if(typeOfAction==="delete"){
+            deleteData(endpoint, id);
         }
     });
 };
 
+// TODO: Needs refactoring, stage 1
 //Builds the list of movies to display
 async function renderMovieList(listOfMovies){
     let contentDiv= document.getElementById("rendered-content");
@@ -290,6 +306,7 @@ async function renderMovieList(listOfMovies){
         })
 }
 
+// TODO: Needs refactoring, stage 1
 //Builds the list of rentals for the logged in studio
 function renderRentalList(listOfRentals){
     let contentDiv= document.getElementById("rendered-content");
@@ -310,7 +327,7 @@ function renderRentalList(listOfRentals){
                         if (movie.id == rental.filmId) {
                             //skicka varje film som mathar id:et till metoden som skriver ut filmen
                             renderImage();
-                            creatingButton("RentedFilm",rental.id,null, "return", creatingDiv(movie.name, contentDiv));
+                            creatingButton("add","RentedFilm",rental.id,null, "return", creatingDiv(movie.name, contentDiv));
                         }
                     });
 
@@ -346,6 +363,7 @@ function renderAllRentals(listofmovies, listofrentals, listofstudios){
     });
 }
 
+// TODO: Needs refactoring, stage 2
 //Adding a studio
 function addStudio(){
 let contentDiv = document.getElementById("rendered-content") 
@@ -389,16 +407,17 @@ submitButton.addEventListener("click", function () {
 
 }
 
-//Adding a Trivia
+// TODO: Needs refactoring, stage 1
+//Adding a Trivia 
 function addTrivia(){
 let contentDiv = document.getElementById("rendered-content") 
 //Töm sidan
 contentDiv.innerHTML = "";
 
-var heading = document.createElement('h2'); // Heading of Form
+var heading = document.createElement('h2');
 heading.innerHTML = "Add a Trivia";
 contentDiv.appendChild(heading);
-var line = document.createElement('hr'); // Giving Horizontal Row After Heading
+var line = document.createElement('hr');
 contentDiv.appendChild(line);
 var linebreak = document.createElement('br');
 contentDiv.appendChild(linebreak);
@@ -411,13 +430,11 @@ contentDiv.appendChild(linebreak);
 
 createLabelandInput(contentDiv, "Trivia: ", 'textarea', "triviaInput");
 
-var submitTriviaBtn = document.createElement('button'); // Append Submit Button
+var submitTriviaBtn = document.createElement('button');
 submitTriviaBtn.className ="submitBtn";
 submitTriviaBtn.id ="submitBtn"
 submitTriviaBtn.innerText ="Submit";
 contentDiv.appendChild(submitTriviaBtn);
-
-
 
 let submit = document.getElementById("submitBtn");
 submit.addEventListener("click", function () {
@@ -430,6 +447,7 @@ submit.addEventListener("click", function () {
 });
 }
 
+// TODO: Needs refactoring, stage 1
 //Adding a Movie
 function addMovie(){
     let contentDiv = document.getElementById("rendered-content") 
@@ -498,8 +516,24 @@ function addMovie(){
 
 
 //Approve Studios
-function approveStudio(){
+function approveStudio(studiosToApprove){
+    let contentDiv = document.getElementById("rendered-content");
+    contentDiv.innerHTML="";
+    
+    studiosToApprove.forEach(studio => {
+        let print= studio.name;
+        let studioDiv= creatingDiv(print, contentDiv);
+        studioDiv.className= "studioDiv";
 
+        let data = {
+            "id": studio.id,
+            "name": studio.name,
+            "password": studio.password,
+            "verified": true
+        }
+
+        creatingButton("update", "Filmstudio",studio.id, data , "approveStudio", studioDiv)
+    })
 }
 
 //--------------------------------------
@@ -538,15 +572,14 @@ function deleteData(endpoint,id ) {
 };
 
 
-function updateData(endpoint, id){
+function updateData(endpoint,id, data){
+    console.log(data)
     fetch(localHost + endpoint+ "/" + id, {
         method: 'PUT',
-        body: JSON.stringify({
-         data
+        body: JSON.stringify(data),
         })
-      }).then((response) => {
-        response.json().then((response) => {
-          console.log(response);
+        .then((response) => {response.json()
+        .then((response) => {console.log(response)
         })
       }).catch(err => {
         console.error(err)
