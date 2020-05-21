@@ -259,7 +259,7 @@ function creatingButton(typeOfAction, endpoint, id, data, text, parentDiv){
         }
 
         if(typeOfAction==="update"){
-            updateData(endpoint, id, data);
+            updateData(endpoint, data);
         }
 
         if(typeOfAction==="delete"){
@@ -287,7 +287,7 @@ async function renderMovieList(listOfMovies){
                 print = "Namn: " + listOfMovies[i].name + "<br>Antal kopior: " + listOfMovies[i].stock + "<hr>";
                 if (user !=null) {
                 //skicka in endpointen samt filmid:et och användarId:et i ett datapaket
-                creatingButton( "Rentedfilm",listOfMovies[i].id, data={ "filmId":listOfMovies[i].id, "studioId":user.id},"rent",creatingDiv(print, contentDiv));
+                creatingButton( "add","Rentedfilm",listOfMovies[i].id, data={ "filmId":listOfMovies[i].id, "studioId":user.id},"rent",creatingDiv(print, contentDiv));
                 }
                 else{
                     creatingDiv(print, contentDiv);
@@ -532,8 +532,10 @@ function approveStudio(studiosToApprove){
             "verified": true
         }
 
-        creatingButton("update", "Filmstudio",studio.id, data , "approveStudio", studioDiv)
-    })
+        creatingButton("update", "filmStudio",studio.id, data , "approveStudio", studioDiv);
+        let button =document.getElementById(studio.id);
+
+    });
 }
 
 //--------------------------------------
@@ -572,18 +574,21 @@ function deleteData(endpoint,id ) {
 };
 
 
-function updateData(endpoint,id, data){
-    console.log(data)
-    fetch(localHost + endpoint+ "/" + id, {
+function updateData(endpoint, data){
+    console.log(data.id)
+    fetch(localHost + endpoint+ "/" + data.id, {
         method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+        },
         body: JSON.stringify(data),
         })
-        .then((response) => {response.json()
-        .then((response) => {console.log(response)
+        .then(object => {
+            console.log("Success!!", object)
         })
-      }).catch(err => {
-        console.error(err)
-      })
-}
+        .catch((error) => {
+            console.log(error)
+        });
+    }
 //------------------------
 
