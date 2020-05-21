@@ -14,7 +14,7 @@ if (localStorage.getItem("userId") !== null) {
 }
 //--------------------------------------------------
 
-//Startstidan, login
+//start, loginpage
 function showLoginPage() {
 
     //Töm sidan
@@ -60,12 +60,12 @@ function showLoginPage() {
     });
 }
 
-//Inloggningen lyckades inte
+//login failed
 function showErrorPage() {
     login.insertAdjacentHTML("afterbegin", "<div>Något gick fel, har du glömt av ditt lösenord?</div><br>");
 }
 
-// Inloggning har lyckats
+// login succeeded
 function showWelcomePage() {
     login.innerHTML = "";
     document.getElementById("rentalButton").style.visibility = "visible";
@@ -106,7 +106,7 @@ function showWelcomePage() {
 
 /* When the user clicks on the button, 
 toggle between hiding and showing the dropdown content */
-// Stulad från w3schools
+// Stolen from w3schools
 function dropDownMenu() {
     document.getElementById("myDropdown").classList.toggle("show");
   }
@@ -126,8 +126,7 @@ function dropDownMenu() {
 //-----------------------------------------------
 
 
-//Hämtning av Data
-//Hämtar data beroende på vilken endpoint som skickas in.
+//fetching data depending on the endpoint.
 async function getDataAsync(endpoint) {
     let response = await fetch(localHost + endpoint);
     let data = await response.json()
@@ -135,9 +134,9 @@ async function getDataAsync(endpoint) {
 }
 //---------------------------------------------------
 
-//Eventlisteners som lyssnar efter knapptryck
+//Buttons
 
-//Fetchar alla Filmer
+//Fetch all Filmer
 let movieButton = document.getElementById("movieButton");
 movieButton.addEventListener('click', async function showMovies() {
     getDataAsync("film")
@@ -145,18 +144,9 @@ movieButton.addEventListener('click', async function showMovies() {
     .catch(error => { console.log(error) });
 });
 
-//Fetchar alla Studios
-let movieButton = document.getElementById("movieButton");
-movieButton.addEventListener('click', async function showMovies() {
-    getDataAsync("filmStudio")
-    .then(data => renderMovieList(data))
-    .catch(error => { console.log(error) });
-});
-
-
-//Fetchar alla Rentals
-let viewRentals = document.getElementById("rentalButton");
-viewRentals.addEventListener('click', async function showRentals() {
+//Fetch all Rentals
+let rentalsButton = document.getElementById("rentalButton");
+rentalsButton.addEventListener('click', async function showRentals() {
     try {
         const data = await getDataAsync("RentedFilm");
         return await renderRentalList(data);
@@ -167,7 +157,7 @@ viewRentals.addEventListener('click', async function showRentals() {
     
 });
 
-//Fetchar alla Rentals,filmer och studios
+//viewRentals for admin
 let rentalButton = document.getElementById("viewRentals");
 rentalButton.addEventListener('click', async function showRentals() {
     let rentals= await getDataAsync("RentedFilm");
@@ -177,35 +167,38 @@ rentalButton.addEventListener('click', async function showRentals() {
     renderAllRentals(film, rentals, studios);
 });
 
-
-//Lägger till studio
-let studioButton = document.getElementById("studioButton");
-studioButton.addEventListener('click', function renderStudioform() {
+//add studio
+let addStudioButton = document.getElementById("studioButton");
+addStudioButton.addEventListener('click', function renderStudioform() {
     addStudio();
 });
 
-// lägger till trivia
-let triviaButton = document.getElementById("triviaButton");
-triviaButton.addEventListener('click', function renderTriviaForm() {
+// add trivia
+let addTriviaButton = document.getElementById("triviaButton");
+addTriviaButton.addEventListener('click', function renderTriviaForm() {
     addTrivia();
 });
 
-let userName = document.getElementById("home");
-userName.addEventListener('click', function(){
+//add Movie
+let addMovieButton = document.getElementById("addMovie");
+addMovieButton.addEventListener('click', function(){
+    addMovie();
+});
+
+//HomeButton
+let startButton = document.getElementById("home");
+startButton.addEventListener('click', function(){
     location.reload();
 });
 
-let addMovieToList = document.getElementById("addMovie");
-addMovieToList.addEventListener('click', function(){
-    addMovie();
-});
+
 
 //------------------------------------------------
 
 
-//Funktioner som bygger ihop datan
+//Functions that builds the data displayed
 
-// renderar bilderna till filmerna
+// images
 function renderImage() {
     var img = document.createElement('img');
     img.className = "movieImage";
@@ -213,7 +206,7 @@ function renderImage() {
     document.getElementById('rendered-content').appendChild(img);
 }
 
-//skapar div:arna jag sedan fyller med data
+//creating divs
 function creatingDiv(element, parentDiv){
     let createdDiv = document.createElement("div");
     createdDiv.className = "createdDiv";
@@ -224,6 +217,7 @@ function creatingDiv(element, parentDiv){
     return createdDiv;
 };
 
+//creating labels and inputFields
 function createLabelandInput(contentDiv,labelText,elementtype,elementId) {
     var InputLabel = document.createElement('label'); // Create Label for Name Field
     InputLabel.innerHTML = labelText; // Set Field Labels
@@ -237,7 +231,7 @@ function createLabelandInput(contentDiv,labelText,elementtype,elementId) {
     return inputField;
 };
 
-//Ta in ett objekt som innehåller filmid och studioid, samt texten på knappen och "föräldradiven"
+//creating a button with some functionality. Needs alot of refactoring :/
 function creatingButton(endpoint,id, data , text, parentDiv){
     let buttonDiv = document.createElement("button");
     buttonDiv.className = "submitBtn";
@@ -259,11 +253,11 @@ function creatingButton(endpoint,id, data , text, parentDiv){
     });
 };
 
-//Bygger ihop listan på filmer
+//Builds the list of movies to display
 async function renderMovieList(listOfMovies){
     let contentDiv= document.getElementById("rendered-content");
     contentDiv.innerHTML ="";
-    let listOfTrivias = await getDataAsync("filmTrivia");
+    let listOfTrivias = await getDataAsync("filmTrivia")
     let print;
 
     getDataAsync("filmStudio")
@@ -278,12 +272,10 @@ async function renderMovieList(listOfMovies){
                 if (user !=null) {
                 //skicka in endpointen samt filmid:et och användarId:et i ett datapaket
                 creatingButton( "Rentedfilm",listOfMovies[i].id, data={ "filmId":listOfMovies[i].id, "studioId":user.id},"rent",creatingDiv(print, contentDiv));
-                // creatingButton( "filmTrivia",listOfMovies[i].id, data={ "filmId":listOfMovies[i].id, "studioId":user.id},"Add Trivia",contentDiv);
                 }
                 else{
                     creatingDiv(print, contentDiv);
                 };
-
                 for (let j = 0; j < listOfTrivias.length; j++) {
                     
                     if (listOfMovies[i].id == listOfTrivias[j].filmId) {
@@ -298,7 +290,7 @@ async function renderMovieList(listOfMovies){
         })
 }
 
-//Bygger listan med filmer studion har hyrt
+//Builds the list of rentals for the logged in studio
 function renderRentalList(listOfRentals){
     let contentDiv= document.getElementById("rendered-content");
     contentDiv.innerHTML ="";
@@ -328,7 +320,7 @@ function renderRentalList(listOfRentals){
     });
 }
 
-//Visar alla studios Rentals
+//Builds the list that show all the rentals for all the studios
 function renderAllRentals(listofmovies, listofrentals, listofstudios){
     let contentDiv = document.getElementById("rendered-content");
     contentDiv.innerHTML="";
@@ -354,7 +346,7 @@ function renderAllRentals(listofmovies, listofrentals, listofstudios){
     });
 }
 
-//Visar ett "formulär" för att lägga till en Studio
+//Adding a studio
 function addStudio(){
 let contentDiv = document.getElementById("rendered-content") 
 //Töm sidan
@@ -397,7 +389,7 @@ submitButton.addEventListener("click", function () {
 
 }
 
-//Ett "formulär" för att lägga in en trivia
+//Adding a Trivia
 function addTrivia(){
 let contentDiv = document.getElementById("rendered-content") 
 //Töm sidan
@@ -438,7 +430,7 @@ submit.addEventListener("click", function () {
 });
 }
 
-//Ett "formulär" för att lägga in en film
+//Adding a Movie
 function addMovie(){
     let contentDiv = document.getElementById("rendered-content") 
     //Töm sidan
@@ -505,7 +497,7 @@ function addMovie(){
 }
 
 
-//Godkänna Studios
+//Approve Studios
 function approveStudio(){
 
 }
@@ -515,7 +507,7 @@ function approveStudio(){
 //Post and Delete Data
 
 
-//ta in en endpoint och ett färdigbyggt objekt
+//Take and enpoint and an object and adding it
 function addData(endpoint, object, ){
 
     // Gör en fetch med localhost och endpointen
@@ -536,7 +528,7 @@ function addData(endpoint, object, ){
     });
 };
 
-//endpoint ska innehålla endpointen och id:et
+//Take an endpoint and an id.
 function deleteData(endpoint,id ) {
     fetch(localHost + endpoint+"/"+id, {
         method: "DELETE",
