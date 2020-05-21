@@ -8,12 +8,12 @@ Backend Issues:
 
 - Images for each movie.
 
-- Constraints on multiple things: - Number of the same movie allowed to rent.
-                                  - Nullchecks on information passed.
+- Solution for setting user as Admin. (admin-bool?)
 
-- Bool for setting users as admin?
+- Email-field for users/studios for notifications/newsletters.
 
-- Email-field for each user for notifications/newsletters.
+- Patch-Method for partially updating objects.
+
 
 
 

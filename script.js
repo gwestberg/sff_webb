@@ -258,57 +258,56 @@ function creatingButton(id, text, parentDiv) {
 
 // TODO: Needs refactoring, stage 1
 //Builds the list of movies to display
-async function renderMovieList(listOfMovies) {
+async function renderMovieList(movies) {
     let contentDiv = document.getElementById("rendered-content");
     contentDiv.innerHTML = "";
     let listOfTrivias = await getDataAsync("filmTrivia")
     let print;
 
     getDataAsync("filmStudio")
-        .then(function (userInStorage) {
+    .then(function (userInStorage) {
+        const user = userInStorage[localStorage.getItem("userId")];
 
-            const user = userInStorage[localStorage.getItem("userId")];
-
-            for (let i = 0; i < listOfMovies.length; i++) {
+        for (let i = 0; i < movies.length; i++) {
                 renderImage();
 
-                print = "Namn: " + listOfMovies[i].name + "<br>Antal kopior: " + listOfMovies[i].stock + "<hr>";
-                let movieToRent = { "filmId": listOfMovies[i].id, "studioId": user.id };
-                if (user != null) {
-                    //skicka in endpointen samt filmid:et och användarId:et i ett datapaket
-                    let rentalBtn = creatingButton(listOfMovies[i].id, "rent", creatingDiv(print, contentDiv));
-                    if (listOfMovies[i].stock == 0) {
-                        rentalBtn.disabled = 1;
-                        rentalBtn.innerHTML = "N/A";
-                    }
-                    rentalBtn.addEventListener('click', function () {
-                        if (listOfMovies[i].stock !== 0) {
-
-                            addData("RentedFilm", movieToRent);
-
-                            listOfMovies[i].stock -= 1;
-                            updateMovie(listOfMovies[i]);
-                        }
-                        else {
-                            contentDiv.innerHTML = listOfMovies[i].name + " is currently out of stock";
-                        }
-                    })
+            print = "Namn: " + movies[i].name + "<br>Antal kopior: " + movies[i].stock + "<hr>";
+            let movieToRent = { "filmId": movies[i].id, "studioId": user.id };
+            if (user != null) {
+                //skicka in endpointen samt filmid:et och användarId:et i ett datapaket
+                let rentalBtn = creatingButton(movies[i].id, "rent", creatingDiv(print, contentDiv));
+                if (movies[i].stock == 0) {
+                    rentalBtn.disabled = 1;
+                    rentalBtn.innerHTML = "N/A";
                 }
-                else {
-                    creatingDiv(print, contentDiv);
-                };
-                for (let j = 0; j < listOfTrivias.length; j++) {
+                rentalBtn.addEventListener('click', function () {
+                    if (movies[i].stock !== 0) {
 
-                    if (listOfMovies[i].id == listOfTrivias[j].filmId) {
-                        creatingDiv("- " + listOfTrivias[j].trivia, contentDiv);
+                        addData("RentedFilm", movieToRent);
+
+                        movies[i].stock -= 1;
+                        updateMovie(movies[i]);
                     }
-                }
-                var line = document.createElement('hr'); // Giving Horizontal Row After Heading
-                contentDiv.appendChild(line);
-                var line = document.createElement('br');
-                contentDiv.appendChild(line);
+                    else {
+                        contentDiv.innerHTML = movies[i].name + " is currently out of stock";
+                    }
+                })
+            }
+            else {
+                creatingDiv(print, contentDiv);
             };
-        })
+            for (let j = 0; j < listOfTrivias.length; j++) {
+
+                if (movies[i].id == listOfTrivias[j].filmId) {
+                    creatingDiv("- " + listOfTrivias[j].trivia, contentDiv);
+                }
+            }
+            var line = document.createElement('hr');
+            contentDiv.appendChild(line);
+            var line = document.createElement('br');
+            contentDiv.appendChild(line);
+        };
+    })
 }
 
 //Builds the list of rentals for the logged in studio
@@ -538,7 +537,6 @@ function approveStudio(studiosToApprove) {
     studiosToApprove.forEach(studio => {
         let print = studio.name;
         let studioDiv = creatingDiv(print, contentDiv);
-        studioDiv.className = "studioDiv";
 
         let data = {
             "id": studio.id,
@@ -547,10 +545,11 @@ function approveStudio(studiosToApprove) {
             "verified": true
         }
 
-        let approveBtn = creatingButton("update", "filmStudio", studio.id, data, "approveStudio", studioDiv)
+        let approveBtn = creatingButton(studio.id, "Approve", studioDiv)
         approveBtn.addEventListener('click', function () {
+            updateData("filmStudio",data)
             subject = "Something has happened";
-            text = "You have been approved"; //
+            text = "You have been approved"; 
             notifyStudio(data, subject, text);
         })
     })
