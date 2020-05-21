@@ -363,7 +363,7 @@ function renderAllRentals(listofmovies, listofrentals, listofstudios){
     });
 }
 
-// TODO: Needs refactoring, stage 2
+// TODO: Needs refactoring
 //Adding a studio
 function addStudio(){
 let contentDiv = document.getElementById("rendered-content") 
@@ -407,7 +407,7 @@ submitButton.addEventListener("click", function () {
 
 }
 
-// TODO: Needs refactoring, stage 1
+// TODO: Needs alot of refactoring
 //Adding a Trivia 
 function addTrivia(){
 let contentDiv = document.getElementById("rendered-content") 
@@ -447,7 +447,7 @@ submit.addEventListener("click", function () {
 });
 }
 
-// TODO: Needs refactoring, stage 1
+// TODO: Needs alot of refactoring
 //Adding a Movie
 function addMovie(){
     let contentDiv = document.getElementById("rendered-content") 
@@ -533,9 +533,26 @@ function approveStudio(studiosToApprove){
         }
 
         creatingButton("update", "filmStudio",studio.id, data , "approveStudio", studioDiv);
-        let button =document.getElementById(studio.id);
+    })
+}
 
-    });
+//Since we have no emails to the studio and no email server to send from i have taken this from stackoverflow.
+//this one needs a imported script tho :/
+//I would've done something like this, but more secure ;)
+function notifyStudio(studio){
+
+    Email.send({
+    Host: "smtp.gmail.com",
+    Username : "mail.suvnet@gmail.com",
+    Password : "SUVNET01Testmail",
+    To : 'mail.suvnet@gmail.com',
+    From : "mail.suvnet@gmail.com",
+    Subject : "It has happened!",
+    Body : "you are approved",
+    })
+    .then(
+        message => alert("mail sent successfully to:"+ studio.name)
+    );
 }
 
 //--------------------------------------
@@ -585,6 +602,7 @@ function updateData(endpoint, data){
         })
         .then(object => {
             console.log("Success!!", object)
+            notifyStudio(object);
         })
         .catch((error) => {
             console.log(error)
