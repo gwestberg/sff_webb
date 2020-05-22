@@ -280,8 +280,10 @@ async function renderMovieList(movies) {
                 renderImage();
 
             print = "Namn: " + movies[i].name + "<br>Antal kopior: " + movies[i].stock + "<hr>";
-            let movieToRent = { "filmId": movies[i].id, "studioId": user.id };
+            
             if (user != null) {
+                //objektet som skickas
+                let movieToRent = { "filmId": movies[i].id, "studioId": user.id };
                 //skicka in endpointen samt filmid:et och användarId:et i ett datapaket
                 let rentalBtn = creatingButton(movies[i].id, "rent", creatingDiv(print, contentDiv));
                 if (movies[i].stock <= 0 || (user.verified == false)) {
