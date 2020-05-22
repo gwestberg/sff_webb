@@ -2,13 +2,21 @@ console.log("Hello World")
 
 const localHost = "https://localhost:44361/api/";
 const adminPanel = document.getElementById("adminPanel");
+// const user= getDataAsync("filmStudio")
+// .then(function (userInStorage) {
+//     return userInStorage[localStorage.getItem("userId")]; 
+// })
 
 
 //--------------------------------------------------
 let login = document.getElementById("login");
 
+
+
 if (localStorage.getItem("userId") !== null) {
+
     showWelcomePage();
+    
 } else {
     showLoginPage();
 }
@@ -276,7 +284,7 @@ async function renderMovieList(movies) {
             if (user != null) {
                 //skicka in endpointen samt filmid:et och användarId:et i ett datapaket
                 let rentalBtn = creatingButton(movies[i].id, "rent", creatingDiv(print, contentDiv));
-                if (movies[i].stock == 0) {
+                if (movies[i].stock <= 0 || (user.verified == false)) {
                     rentalBtn.disabled = 1;
                     rentalBtn.innerHTML = "N/A";
                 }
@@ -407,7 +415,7 @@ function addStudio() {
     //lyssnar på ett knapptryck och börjar processa informationen som angavs
     submitButton.addEventListener("click", function () {
         let getUser = document.getElementById("studioName");
-        let getPass = document.getElementById("studioPass");
+        let getPass = document.getElementById("studioPw");
 
         if (getUser !== null || getPass !== null) {
             data = { "name": getUser.value, "password": getPass.value, "verified": false }
